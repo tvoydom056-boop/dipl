@@ -1,0 +1,31 @@
+{
+  "name": "kiks-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.json && vite build",
+    "bench:dispatch": "tsx benchmarks/dispatch.bench.ts",
+    "bench:bundle": "tsx benchmarks/bundle.bench.ts",
+    "bench": "npm run bench:dispatch && npm run bench:bundle"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.9.1",
+    "mobx": "^6.13.7",
+    "mobx-react-lite": "^4.1.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-redux": "^9.2.0",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.0.4",
+    "tsx": "^4.20.5",
+    "typescript": "^5.8.3",
+    "vite": "^7.1.12"
+  }
+}
