@@ -1,4 +1,4 @@
-import { Provider, useKiks } from "kiks";
+import { useKiks } from "kiks/react";
 
 import { TaskManagerView } from "../../shared/TaskManagerView";
 import { taskActions } from "./actions";
@@ -71,9 +71,5 @@ function KiksTaskManagerInner() {
 }
 
 export function KiksTaskManager() {
-  return (
-    <Provider store={taskStore}>
-      <KiksTaskManagerInner />
-    </Provider>
-  );
+  return <KiksTaskManagerInner />;
 }

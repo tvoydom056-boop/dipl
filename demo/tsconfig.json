@@ -14,7 +14,10 @@
     "strict": true,
     "types": ["node"],
     "paths": {
-      "kiks": ["../packages/kiks/src/index.ts"]
+      "kiks": ["../packages/kiks/src/index.ts"],
+      "kiks/core": ["../packages/kiks/src/core/index.ts"],
+      "kiks/react": ["../packages/kiks/src/react/index.ts"],
+      "kiks/middleware": ["../packages/kiks/src/middleware/index.ts"]
     }
   },
   "include": ["src", "benchmarks", "vite.config.ts"]

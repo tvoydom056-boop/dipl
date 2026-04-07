@@ -3,13 +3,15 @@ import { useState } from "react";
 type ImplementationKey = "kiks" | "redux" | "zustand" | "mobx";
 type ComparisonViewMode = "cards" | "lines";
 type ComparisonScope = "all" | "active";
-type MetricKind = "dispatch" | "bundle";
+type MetricKind = "dispatch" | "bundle" | "rerender";
 
 interface MetricRow {
   key: ImplementationKey;
   title: string;
   dispatchOps: number;
   bundleGzipKb: number;
+  rerenderScore: number;
+  rerenderLabel: string;
   timeTravel: string;
   selectors: string;
   dependencies: string;
@@ -45,6 +47,8 @@ const metricRows: MetricRow[] = [
     title: "kiks",
     dispatchOps: 251052.92,
     bundleGzipKb: 65.87,
+    rerenderScore: 92,
+    rerenderLabel: "Высокий контроль",
     timeTravel: "Встроен",
     selectors: "Встроены",
     dependencies: "React peer only",
@@ -56,6 +60,8 @@ const metricRows: MetricRow[] = [
     title: "Redux Toolkit",
     dispatchOps: 8016.85,
     bundleGzipKb: 70.59,
+    rerenderScore: 66,
+    rerenderLabel: "Средний контроль",
     timeTravel: "Через DevTools",
     selectors: "Частично",
     dependencies: "Redux ecosystem",
@@ -67,6 +73,8 @@ const metricRows: MetricRow[] = [
     title: "Zustand",
     dispatchOps: 421910.49,
     bundleGzipKb: 62.31,
+    rerenderScore: 90,
+    rerenderLabel: "Высокий контроль",
     timeTravel: "Кастомно",
     selectors: "Частично",
     dependencies: "Zustand runtime",
@@ -78,6 +86,8 @@ const metricRows: MetricRow[] = [
     title: "MobX",
     dispatchOps: 12623.31,
     bundleGzipKb: 79.31,
+    rerenderScore: 62,
+    rerenderLabel: "Средний контроль",
     timeTravel: "Кастомно",
     selectors: "Нет",
     dependencies: "MobX runtime",
@@ -89,6 +99,7 @@ const metricRows: MetricRow[] = [
 const maxDispatch = Math.max(...metricRows.map((row) => row.dispatchOps));
 const maxBundle = Math.max(...metricRows.map((row) => row.bundleGzipKb));
 const minBundle = Math.min(...metricRows.map((row) => row.bundleGzipKb));
+const maxRerenderScore = 100;
 
 function formatNumber(value: number): string {
   return new Intl.NumberFormat("ru-RU", {
@@ -564,6 +575,43 @@ export function ComparisonDashboard({
             </div>
           </article>
 
+          <article className="comparison-panel">
+            <div className="panel-head">
+              <div>
+                <p className="eyebrow">График 3</p>
+                <h2>Re-render control</h2>
+              </div>
+              <span className="panel-note">
+                Архитектурная оценка контроля UI-обновлений до Profiler-замера
+              </span>
+            </div>
+
+            <div className="metric-chart">
+              {metricRows.map((row) => (
+                <div
+                  className={[
+                    "metric-row",
+                    row.key === activeImplementation ? "is-active" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  key={`rerender-${row.key}`}
+                >
+                  <div className="metric-row-head">
+                    <strong>{row.title}</strong>
+                    <span>{row.rerenderLabel}</span>
+                  </div>
+                  <div className="metric-bar-track">
+                    <div
+                      className={`metric-bar-fill ${row.colorClass}`}
+                      style={{ width: `${row.rerenderScore}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </article>
+
           <article className="comparison-panel comparison-panel--matrix">
             <div className="panel-head">
               <div>
@@ -636,6 +684,17 @@ export function ComparisonDashboard({
             selector={(row) => row.bundleGzipKb}
             subtitle="Чем выше точка, тем компактнее итоговая gzip-сборка"
             title="Bundle gzip"
+          />
+
+          <MetricLineChart
+            activeImplementation={activeImplementation}
+            labelFormatter={(value) => `${Math.round(value)}/100`}
+            maxValue={maxRerenderScore}
+            metric="rerender"
+            rows={comparisonRows}
+            selector={(row) => row.rerenderScore}
+            subtitle="Архитектурная оценка контроля re-render: показывает, насколько библиотека помогает ограничивать лишние UI-обновления"
+            title="Re-render control"
           />
 
           <CapabilityVisualCard

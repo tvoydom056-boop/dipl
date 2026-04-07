@@ -13,8 +13,23 @@ export default defineConfig({
       : undefined,
   },
   resolve: {
-    alias: {
-      kiks: fileURLToPath(new URL("../packages/kiks/src/index.ts", import.meta.url)),
-    },
+    alias: [
+      {
+        find: /^kiks\/core$/,
+        replacement: fileURLToPath(new URL("../packages/kiks/src/core/index.ts", import.meta.url)),
+      },
+      {
+        find: /^kiks\/react$/,
+        replacement: fileURLToPath(new URL("../packages/kiks/src/react/index.ts", import.meta.url)),
+      },
+      {
+        find: /^kiks\/middleware$/,
+        replacement: fileURLToPath(new URL("../packages/kiks/src/middleware/index.ts", import.meta.url)),
+      },
+      {
+        find: /^kiks$/,
+        replacement: fileURLToPath(new URL("../packages/kiks/src/index.ts", import.meta.url)),
+      },
+    ],
   },
 });

@@ -4,11 +4,15 @@ import {
 } from "react";
 
 import type { Action } from "../core/Action";
-import { Store } from "../core/Store";
+import type { Store } from "../core/Store";
 import type { Selector } from "../core/Selector";
 import { KiksContext } from "./Provider";
 
 const identity = <TState,>(state: TState): TState => state;
+
+function isSelector<TState, TResult>(value: unknown): value is Selector<TState, TResult> {
+  return typeof value === "function";
+}
 
 /**
  * Подключает компонент к store и возвращает выбранный фрагмент состояния.
@@ -29,9 +33,11 @@ export function useKiks<TState, TAction extends Action, TResult = TState>(
 ): TResult {
   const contextStore = useContext(KiksContext) as Store<TState, TAction> | null;
 
-  const resolvedStore = storeOrSelector instanceof Store
-    ? storeOrSelector
-    : contextStore;
+  const resolvedStore = (
+    isSelector(storeOrSelector)
+      ? contextStore
+      : storeOrSelector ?? contextStore
+  ) as Store<TState, TAction> | null;
 
   if (!resolvedStore) {
     throw new Error(
@@ -40,9 +46,9 @@ export function useKiks<TState, TAction extends Action, TResult = TState>(
   }
 
   const resolvedSelector = (
-    storeOrSelector instanceof Store
-      ? selector ?? identity<TState>
-      : storeOrSelector ?? identity<TState>
+    isSelector(storeOrSelector)
+      ? storeOrSelector ?? identity<TState>
+      : selector ?? identity<TState>
   ) as Selector<TState, TResult>;
 
   return useSyncExternalStore(
