@@ -1,0 +1,367 @@
+{
+  "generatedAt": "2026-04-07T21:46:24.293Z",
+  "dispatch": {
+    "iterations": 100000,
+    "results": {
+      "kiks": {
+        "name": "kiks",
+        "totalMs": 521.3853999999999,
+        "opsPerSec": 191796.7016337627
+      },
+      "redux": {
+        "name": "redux toolkit",
+        "totalMs": 16042.4671,
+        "opsPerSec": 6233.455202161518
+      },
+      "zustand": {
+        "name": "zustand",
+        "totalMs": 249.87870000000112,
+        "opsPerSec": 400194.17421332654
+      },
+      "mobx": {
+        "name": "mobx",
+        "totalMs": 9199.0867,
+        "opsPerSec": 10870.644365162902
+      }
+    }
+  },
+  "bundle": {
+    "results": {
+      "kiks": {
+        "rawKb": 207.28,
+        "gzipKb": 64.3
+      },
+      "redux": {
+        "rawKb": 226.95,
+        "gzipKb": 71.98
+      },
+      "zustand": {
+        "rawKb": 204.83,
+        "gzipKb": 63.71
+      },
+      "mobx": {
+        "rawKb": 265.04,
+        "gzipKb": 80.67
+      }
+    }
+  },
+  "rerender": {
+    "scenarios": [
+      "addTask",
+      "toggleTask",
+      "setSearch",
+      "undo"
+    ],
+    "results": {
+      "kiks": {
+        "totalCommits": 4,
+        "totalChangedComponents": 35,
+        "scenarios": {
+          "addTask": {
+            "commits": 1,
+            "changedComponents": 10,
+            "changedZones": [
+              "categories-zone",
+              "history-item:0",
+              "history-item:1",
+              "history-zone",
+              "list-item:task-1",
+              "list-item:task-2",
+              "list-item:task-3",
+              "list-item:task-bench-dw4it1g",
+              "list-zone",
+              "stats-zone"
+            ]
+          },
+          "toggleTask": {
+            "commits": 1,
+            "changedComponents": 11,
+            "changedZones": [
+              "categories-zone",
+              "history-item:0",
+              "history-item:1",
+              "history-item:2",
+              "history-zone",
+              "list-item:task-1",
+              "list-item:task-2",
+              "list-item:task-3",
+              "list-item:task-bench-dw4it1g",
+              "list-zone",
+              "stats-zone"
+            ]
+          },
+          "setSearch": {
+            "commits": 1,
+            "changedComponents": 5,
+            "changedZones": [
+              "categories-zone",
+              "filters-zone",
+              "list-zone",
+              "stats-zone",
+              "summary-zone"
+            ]
+          },
+          "undo": {
+            "commits": 1,
+            "changedComponents": 9,
+            "changedZones": [
+              "categories-zone",
+              "filters-zone",
+              "list-item:task-1",
+              "list-item:task-2",
+              "list-item:task-3",
+              "list-item:task-bench-dw4it1g",
+              "list-zone",
+              "stats-zone",
+              "summary-zone"
+            ]
+          }
+        }
+      },
+      "redux": {
+        "totalCommits": 4,
+        "totalChangedComponents": 49,
+        "scenarios": {
+          "addTask": {
+            "commits": 1,
+            "changedComponents": 12,
+            "changedZones": [
+              "categories-zone",
+              "filters-zone",
+              "history-item:0",
+              "history-item:1",
+              "history-zone",
+              "list-item:task-0norayc",
+              "list-item:task-1",
+              "list-item:task-2",
+              "list-item:task-3",
+              "list-zone",
+              "stats-zone",
+              "summary-zone"
+            ]
+          },
+          "toggleTask": {
+            "commits": 1,
+            "changedComponents": 13,
+            "changedZones": [
+              "categories-zone",
+              "filters-zone",
+              "history-item:0",
+              "history-item:1",
+              "history-item:2",
+              "history-zone",
+              "list-item:task-0norayc",
+              "list-item:task-1",
+              "list-item:task-2",
+              "list-item:task-3",
+              "list-zone",
+              "stats-zone",
+              "summary-zone"
+            ]
+          },
+          "setSearch": {
+            "commits": 1,
+            "changedComponents": 10,
+            "changedZones": [
+              "categories-zone",
+              "filters-zone",
+              "history-item:0",
+              "history-item:1",
+              "history-item:2",
+              "history-item:3",
+              "history-zone",
+              "list-zone",
+              "stats-zone",
+              "summary-zone"
+            ]
+          },
+          "undo": {
+            "commits": 1,
+            "changedComponents": 14,
+            "changedZones": [
+              "categories-zone",
+              "filters-zone",
+              "history-item:0",
+              "history-item:1",
+              "history-item:2",
+              "history-item:3",
+              "history-zone",
+              "list-item:task-0norayc",
+              "list-item:task-1",
+              "list-item:task-2",
+              "list-item:task-3",
+              "list-zone",
+              "stats-zone",
+              "summary-zone"
+            ]
+          }
+        }
+      },
+      "zustand": {
+        "totalCommits": 4,
+        "totalChangedComponents": 49,
+        "scenarios": {
+          "addTask": {
+            "commits": 1,
+            "changedComponents": 12,
+            "changedZones": [
+              "categories-zone",
+              "filters-zone",
+              "history-item:0",
+              "history-item:1",
+              "history-zone",
+              "list-item:task-1",
+              "list-item:task-2",
+              "list-item:task-3",
+              "list-item:task-xtrnyq8",
+              "list-zone",
+              "stats-zone",
+              "summary-zone"
+            ]
+          },
+          "toggleTask": {
+            "commits": 1,
+            "changedComponents": 13,
+            "changedZones": [
+              "categories-zone",
+              "filters-zone",
+              "history-item:0",
+              "history-item:1",
+              "history-item:2",
+              "history-zone",
+              "list-item:task-1",
+              "list-item:task-2",
+              "list-item:task-3",
+              "list-item:task-xtrnyq8",
+              "list-zone",
+              "stats-zone",
+              "summary-zone"
+            ]
+          },
+          "setSearch": {
+            "commits": 1,
+            "changedComponents": 10,
+            "changedZones": [
+              "categories-zone",
+              "filters-zone",
+              "history-item:0",
+              "history-item:1",
+              "history-item:2",
+              "history-item:3",
+              "history-zone",
+              "list-zone",
+              "stats-zone",
+              "summary-zone"
+            ]
+          },
+          "undo": {
+            "commits": 1,
+            "changedComponents": 14,
+            "changedZones": [
+              "categories-zone",
+              "filters-zone",
+              "history-item:0",
+              "history-item:1",
+              "history-item:2",
+              "history-item:3",
+              "history-zone",
+              "list-item:task-1",
+              "list-item:task-2",
+              "list-item:task-3",
+              "list-item:task-xtrnyq8",
+              "list-zone",
+              "stats-zone",
+              "summary-zone"
+            ]
+          }
+        }
+      },
+      "mobx": {
+        "totalCommits": 4,
+        "totalChangedComponents": 49,
+        "scenarios": {
+          "addTask": {
+            "commits": 1,
+            "changedComponents": 12,
+            "changedZones": [
+              "categories-zone",
+              "filters-zone",
+              "history-item:0",
+              "history-item:1",
+              "history-zone",
+              "list-item:task-1",
+              "list-item:task-2",
+              "list-item:task-3",
+              "list-item:task-ml886o4",
+              "list-zone",
+              "stats-zone",
+              "summary-zone"
+            ]
+          },
+          "toggleTask": {
+            "commits": 1,
+            "changedComponents": 13,
+            "changedZones": [
+              "categories-zone",
+              "filters-zone",
+              "history-item:0",
+              "history-item:1",
+              "history-item:2",
+              "history-zone",
+              "list-item:task-1",
+              "list-item:task-2",
+              "list-item:task-3",
+              "list-item:task-ml886o4",
+              "list-zone",
+              "stats-zone",
+              "summary-zone"
+            ]
+          },
+          "setSearch": {
+            "commits": 1,
+            "changedComponents": 10,
+            "changedZones": [
+              "categories-zone",
+              "filters-zone",
+              "history-item:0",
+              "history-item:1",
+              "history-item:2",
+              "history-item:3",
+              "history-zone",
+              "list-zone",
+              "stats-zone",
+              "summary-zone"
+            ]
+          },
+          "undo": {
+            "commits": 1,
+            "changedComponents": 14,
+            "changedZones": [
+              "categories-zone",
+              "filters-zone",
+              "history-item:0",
+              "history-item:1",
+              "history-item:2",
+              "history-item:3",
+              "history-zone",
+              "list-item:task-1",
+              "list-item:task-2",
+              "list-item:task-3",
+              "list-item:task-ml886o4",
+              "list-zone",
+              "stats-zone",
+              "summary-zone"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "librarySize": {
+    "kiks": {
+      "files": 7,
+      "rawKb": 4.3,
+      "gzipKb": 1.99
+    }
+  }
+}

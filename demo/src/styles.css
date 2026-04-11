@@ -512,7 +512,7 @@ label span,
 }
 
 .comparison-row--extended {
-  grid-template-columns: 1.15fr 1fr 0.8fr 0.8fr 0.95fr 0.8fr;
+  grid-template-columns: 1.15fr 1fr 0.8fr 0.95fr 1.1fr 0.9fr 0.8fr;
 }
 
 .comparison-row span,
@@ -637,6 +637,64 @@ label span,
   font-size: 0.83rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+.rerender-breakdown {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(19, 34, 56, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.rerender-breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.rerender-breakdown-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(19, 34, 56, 0.04);
+}
+
+.rerender-breakdown-top,
+.rerender-breakdown-meta,
+.rerender-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.rerender-breakdown-top span,
+.rerender-breakdown-meta span,
+.rerender-breakdown-row span,
+.rerender-breakdown-row small {
+  color: #6b7c94;
+}
+
+.rerender-breakdown-list {
+  display: grid;
+  gap: 10px;
+}
+
+.rerender-breakdown-row {
+  padding-top: 10px;
+  border-top: 1px solid rgba(19, 34, 56, 0.08);
+}
+
+.rerender-breakdown-row strong {
+  min-width: 88px;
+  text-transform: lowercase;
+}
+
+.rerender-breakdown-row small {
+  flex: 1;
+  text-align: right;
 }
 
 .metric-chart {

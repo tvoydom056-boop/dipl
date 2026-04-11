@@ -1,4 +1,4 @@
-import { Reducer } from "kiks";
+import { Reducer } from "../../../../packages/kiks/src";
 
 import type { TaskActionUnion } from "./actions";
 import type { TaskState } from "./types";

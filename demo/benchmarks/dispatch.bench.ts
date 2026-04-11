@@ -5,6 +5,7 @@ import { makeAutoObservable } from "mobx";
 import { create } from "zustand";
 
 import { Action, Reducer, Store } from "../../packages/kiks/src";
+import { updateBenchmarkResults } from "./results-store";
 import { pushHistory } from "../src/shared/historyHelpers";
 import { createInitialTaskState, type TaskState } from "../src/shared/taskModel";
 
@@ -190,15 +191,25 @@ function benchmarkMobx(): BenchResult {
   });
 }
 
-const results = [
-  benchmarkKiks(),
-  benchmarkRedux(),
-  benchmarkZustand(),
-  benchmarkMobx(),
-].sort((left, right) => right.opsPerSec - left.opsPerSec);
+const benchmarkMap = {
+  kiks: benchmarkKiks(),
+  redux: benchmarkRedux(),
+  zustand: benchmarkZustand(),
+  mobx: benchmarkMobx(),
+};
 
-console.log(`Dispatch benchmark, ${ITERATIONS} итераций`);
-for (const result of results) {
+updateBenchmarkResults((current) => ({
+  ...current,
+  dispatch: {
+    iterations: ITERATIONS,
+    results: benchmarkMap,
+  },
+}));
+
+const sortedResults = Object.values(benchmarkMap).sort((left, right) => right.opsPerSec - left.opsPerSec);
+
+console.log(`Dispatch benchmark, ${ITERATIONS} iterations`);
+for (const result of sortedResults) {
   console.log(
     `${result.name.padEnd(14)} ${formatNumber(result.opsPerSec).padStart(12)} ops/sec | ${formatNumber(result.totalMs).padStart(9)} ms`,
   );

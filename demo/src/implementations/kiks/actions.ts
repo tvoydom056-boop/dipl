@@ -1,4 +1,4 @@
-import { Action } from "kiks";
+import { Action } from "../../../../packages/kiks/src";
 
 import type {
   Category,

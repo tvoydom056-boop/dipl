@@ -8,7 +8,8 @@
     "build": "tsc -p tsconfig.json && vite build",
     "bench:dispatch": "tsx benchmarks/dispatch.bench.ts",
     "bench:bundle": "tsx benchmarks/bundle.bench.ts",
-    "bench": "npm run bench:dispatch && npm run bench:bundle"
+    "bench:rerender": "tsx benchmarks/rerender.bench.tsx",
+    "bench": "npm run bench:dispatch && npm run bench:bundle && npm run bench:rerender"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.9.1",
@@ -20,10 +21,12 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@types/jsdom": "^28.0.1",
     "@types/node": "^24.5.2",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^5.0.4",
+    "jsdom": "^26.1.0",
     "tsx": "^4.20.5",
     "typescript": "^5.8.3",
     "vite": "^7.1.12"

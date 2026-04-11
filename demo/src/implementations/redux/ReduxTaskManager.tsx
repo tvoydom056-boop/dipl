@@ -18,7 +18,7 @@ import {
   type TaskState,
 } from "../../shared/taskModel";
 
-interface ReduxRootState {
+export interface ReduxRootState {
   timeline: TaskState[];
   pointer: number;
 }
@@ -32,7 +32,7 @@ function commitState(
   Object.assign(state, pushHistory(state.timeline, state.pointer, next));
 }
 
-const taskSlice = createSlice({
+export const taskSlice = createSlice({
   name: "reduxTasks",
   initialState: {
     timeline: [createInitialTaskState()],
@@ -141,9 +141,34 @@ const taskSlice = createSlice({
   },
 });
 
-const reduxStore = configureStore({
+export const reduxStore = configureStore({
   reducer: taskSlice.reducer,
 });
+
+export const reduxBenchmarkApi = {
+  addTask() {
+    reduxStore.dispatch(
+      taskSlice.actions.addTask({
+        title: "Benchmark task",
+        description: "Generated during rerender benchmark",
+        categoryId: null,
+      }),
+    );
+  },
+  toggleTask() {
+    const state = reduxStore.getState() as ReduxRootState;
+    const firstTaskId = state.timeline[state.pointer].tasks[0]?.id;
+    if (firstTaskId) {
+      reduxStore.dispatch(taskSlice.actions.toggleTask(firstTaskId));
+    }
+  },
+  setSearch() {
+    reduxStore.dispatch(taskSlice.actions.setSearch("ui"));
+  },
+  undo() {
+    reduxStore.dispatch(taskSlice.actions.undo());
+  },
+};
 
 function ReduxTaskManagerInner() {
   const dispatch = useDispatch();

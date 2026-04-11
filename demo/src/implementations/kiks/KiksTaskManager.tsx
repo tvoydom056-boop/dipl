@@ -1,5 +1,3 @@
-import { useKiks } from "kiks/react";
-
 import { TaskManagerView } from "../../shared/TaskManagerView";
 import { taskActions } from "./actions";
 import {
@@ -8,6 +6,34 @@ import {
   selectVisibleTasks,
 } from "./selectors";
 import { taskStore } from "./store";
+import { useKiksLocal } from "./useKiksLocal";
+
+export const kiksBenchmarkApi = {
+  addTask() {
+    taskStore.dispatch(
+      taskActions.addTask({
+        id: `task-bench-${Math.random().toString(36).slice(2, 9)}`,
+        title: "Benchmark task",
+        description: "Generated during rerender benchmark",
+        status: "active",
+        categoryId: null,
+        createdAt: Date.now(),
+      }),
+    );
+  },
+  toggleTask() {
+    const firstTaskId = taskStore.getState().tasks[0]?.id;
+    if (firstTaskId) {
+      taskStore.dispatch(taskActions.toggleTask(firstTaskId));
+    }
+  },
+  setSearch() {
+    taskStore.dispatch(taskActions.setSearch("ui"));
+  },
+  undo() {
+    taskStore.undo();
+  },
+};
 
 function KiksTaskManagerInner() {
   return (
@@ -15,16 +41,16 @@ function KiksTaskManagerInner() {
       controller={{
         libraryName: "kiks",
         libraryDescription:
-          "Одно приложение показывает ключевые возможности библиотеки: CRUD, фильтрацию, вложенные категории, счётчик операций и переходы по истории.",
-        tasks: useKiks(taskStore, selectVisibleTasks),
-        allCategories: useKiks(taskStore, (state) => state.categories),
-        rootCategories: useKiks(taskStore, selectRootCategories),
-        stats: useKiks(taskStore, selectTaskStats),
-        selectedCategoryId: useKiks(taskStore, (state) => state.selectedCategoryId),
-        search: useKiks(taskStore, (state) => state.search),
-        filter: useKiks(taskStore, (state) => state.filter),
-        sort: useKiks(taskStore, (state) => state.sort),
-        operationsCount: useKiks(taskStore, (state) => state.operationsCount),
+          "Одно приложение показывает ключевые возможности библиотеки: CRUD, фильтрацию, вложенные категории, счетчик операций и переходы по истории.",
+        tasks: useKiksLocal(taskStore, selectVisibleTasks),
+        allCategories: useKiksLocal(taskStore, (state) => state.categories),
+        rootCategories: useKiksLocal(taskStore, selectRootCategories),
+        stats: useKiksLocal(taskStore, selectTaskStats),
+        selectedCategoryId: useKiksLocal(taskStore, (state) => state.selectedCategoryId),
+        search: useKiksLocal(taskStore, (state) => state.search),
+        filter: useKiksLocal(taskStore, (state) => state.filter),
+        sort: useKiksLocal(taskStore, (state) => state.sort),
+        operationsCount: useKiksLocal(taskStore, (state) => state.operationsCount),
         history: taskStore.getHistory().getSnapshots(),
         historyIndex: taskStore.getHistory().getCurrentIndex(),
         canUndo: taskStore.canUndo(),

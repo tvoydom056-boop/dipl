@@ -1,5 +1,11 @@
-import { useMemo, useState } from "react";
+import {
+  memo,
+  type ReactNode,
+  useMemo,
+  useState,
+} from "react";
 
+import { trackRender } from "./renderTracker";
 import type {
   Category,
   FilterMode,
@@ -8,6 +14,17 @@ import type {
   Task,
   TaskStats,
 } from "./taskModel";
+
+function RenderZone({
+  zone,
+  children,
+}: {
+  zone: string;
+  children: ReactNode;
+}) {
+  trackRender(zone);
+  return <>{children}</>;
+}
 
 function CategoryTree({
   allCategories,
@@ -21,6 +38,7 @@ function CategoryTree({
   onSelectCategory: (categoryId: string | null) => void;
 }) {
   const renderNode = (category: Category) => {
+    trackRender(`category-node:${category.id}`);
     const children = allCategories.filter((item) => item.parentId === category.id);
 
     return (
@@ -90,7 +108,7 @@ function formatFilter(value: FilterMode): string {
     case "active":
       return "Только активные";
     case "completed":
-      return "Только завершённые";
+      return "Только завершенные";
     case "all":
     default:
       return "Все задачи";
@@ -109,50 +127,40 @@ function formatSort(value: SortMode): string {
   }
 }
 
-/**
- * Единый UI для сравнения реализаций на разных библиотеках управления состоянием.
- */
-export function TaskManagerView({
-  controller,
+const HeroSection = memo(function HeroSection({
+  libraryName,
+  libraryDescription,
+  filter,
+  sort,
+  selectedCategoryTitle,
+  historyIndex,
+  historyLength,
 }: {
-  controller: TaskManagerController;
+  libraryName: string;
+  libraryDescription: string;
+  filter: FilterMode;
+  sort: SortMode;
+  selectedCategoryTitle: string;
+  historyIndex: number;
+  historyLength: number;
 }) {
-  const [taskTitle, setTaskTitle] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
-  const [categoryTitle, setCategoryTitle] = useState("");
-
-  const selectedCategoryTitle = useMemo(() => {
-    if (!controller.selectedCategoryId) {
-      return "Все категории";
-    }
-
-    return (
-      controller.allCategories.find((category) => category.id === controller.selectedCategoryId)?.title ??
-      "Выбранная категория"
-    );
-  }, [controller.allCategories, controller.selectedCategoryId]);
-
-  const historyProgress = controller.history.length > 1
-    ? Math.round((controller.historyIndex / (controller.history.length - 1)) * 100)
-    : 0;
-
   return (
-    <main className="page">
+    <RenderZone zone="hero">
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">{controller.libraryName}</p>
-          <h2>Менеджер задач с встроенным time-travel</h2>
-          <p className="hero-text">{controller.libraryDescription}</p>
+          <p className="eyebrow">{libraryName}</p>
+          <h2>Менеджер задач со встроенным time-travel</h2>
+          <p className="hero-text">{libraryDescription}</p>
         </div>
 
         <div className="hero-summary">
           <div className="summary-chip">
             <span>Фильтр</span>
-            <strong>{formatFilter(controller.filter)}</strong>
+            <strong>{formatFilter(filter)}</strong>
           </div>
           <div className="summary-chip">
             <span>Сортировка</span>
-            <strong>{formatSort(controller.sort)}</strong>
+            <strong>{formatSort(sort)}</strong>
           </div>
           <div className="summary-chip">
             <span>Категория</span>
@@ -161,42 +169,74 @@ export function TaskManagerView({
           <div className="summary-chip">
             <span>История</span>
             <strong>
-              {controller.historyIndex + 1} / {controller.history.length}
+              {historyIndex + 1} / {historyLength}
             </strong>
           </div>
         </div>
       </section>
+    </RenderZone>
+  );
+});
 
-      <section className="dashboard">
-        <article className="panel stats-panel">
-          <div className="panel-head">
-            <div>
-              <p className="eyebrow">Показатели</p>
-              <h3>Сводка сценария</h3>
-            </div>
-            <span className="panel-note">Реальное состояние выбранной реализации</span>
+const StatsPanel = memo(function StatsPanel({
+  stats,
+  operationsCount,
+}: {
+  stats: TaskStats;
+  operationsCount: number;
+}) {
+  return (
+    <RenderZone zone="stats-panel">
+      <article className="panel stats-panel">
+        <div className="panel-head">
+          <div>
+            <p className="eyebrow">Показатели</p>
+            <h3>Сводка сценария</h3>
           </div>
+          <span className="panel-note">Реальное состояние выбранной реализации</span>
+        </div>
 
-          <div className="stats-grid">
-            <div>
-              <span>Всего задач</span>
-              <strong>{controller.stats.total}</strong>
-            </div>
-            <div>
-              <span>Активных</span>
-              <strong>{controller.stats.active}</strong>
-            </div>
-            <div>
-              <span>Завершённых</span>
-              <strong>{controller.stats.completed}</strong>
-            </div>
-            <div>
-              <span>Операций</span>
-              <strong>{controller.operationsCount}</strong>
-            </div>
+        <div className="stats-grid">
+          <div>
+            <span>Всего задач</span>
+            <strong>{stats.total}</strong>
           </div>
-        </article>
+          <div>
+            <span>Активных</span>
+            <strong>{stats.active}</strong>
+          </div>
+          <div>
+            <span>Завершенных</span>
+            <strong>{stats.completed}</strong>
+          </div>
+          <div>
+            <span>Операций</span>
+            <strong>{operationsCount}</strong>
+          </div>
+        </div>
+      </article>
+    </RenderZone>
+  );
+});
 
+const ControlsPanel = memo(
+  function ControlsPanel({
+    search,
+    filter,
+    sort,
+    setSearch,
+    setFilter,
+    setSort,
+  }: {
+    search: string;
+    filter: FilterMode;
+    sort: SortMode;
+    setSearch: (value: string) => void;
+    setFilter: (value: FilterMode) => void;
+    setSort: (value: SortMode) => void;
+  }) {
+    return (
+      <RenderZone zone="controls-panel">
         <article className="panel controls-panel">
           <div className="panel-head">
             <div>
@@ -210,30 +250,31 @@ export function TaskManagerView({
             <label>
               <span>Поиск</span>
               <input
-                onChange={(event) => controller.setSearch(event.target.value)}
+                data-bench="search-input"
+                onChange={(event) => setSearch(event.target.value)}
                 placeholder="Найти задачу или описание"
                 type="search"
-                value={controller.search}
+                value={search}
               />
             </label>
 
             <label>
               <span>Фильтр</span>
               <select
-                onChange={(event) => controller.setFilter(event.target.value as FilterMode)}
-                value={controller.filter}
+                onChange={(event) => setFilter(event.target.value as FilterMode)}
+                value={filter}
               >
                 <option value="all">Все</option>
                 <option value="active">Активные</option>
-                <option value="completed">Завершённые</option>
+                <option value="completed">Завершенные</option>
               </select>
             </label>
 
             <label>
               <span>Сортировка</span>
               <select
-                onChange={(event) => controller.setSort(event.target.value as SortMode)}
-                value={controller.sort}
+                onChange={(event) => setSort(event.target.value as SortMode)}
+                value={sort}
               >
                 <option value="created-desc">Сначала новые</option>
                 <option value="created-asc">Сначала старые</option>
@@ -242,9 +283,31 @@ export function TaskManagerView({
             </label>
           </div>
         </article>
-      </section>
+      </RenderZone>
+    );
+  },
+  (previous, next) =>
+    previous.search === next.search &&
+    previous.filter === next.filter &&
+    previous.sort === next.sort,
+);
 
-      <section className="workspace">
+const FormPanel = memo(
+  function FormPanel({
+    selectedCategoryId,
+    addTask,
+    addCategory,
+  }: {
+    selectedCategoryId: string | null;
+    addTask: TaskManagerController["addTask"];
+    addCategory: TaskManagerController["addCategory"];
+  }) {
+    const [taskTitle, setTaskTitle] = useState("");
+    const [taskDescription, setTaskDescription] = useState("");
+    const [categoryTitle, setCategoryTitle] = useState("");
+
+    return (
+      <RenderZone zone="form-panel">
         <article className="panel form-panel">
           <div className="panel-head">
             <div>
@@ -256,6 +319,7 @@ export function TaskManagerView({
 
           <form
             className="stack"
+            data-bench="task-form"
             onSubmit={(event) => {
               event.preventDefault();
 
@@ -263,10 +327,10 @@ export function TaskManagerView({
                 return;
               }
 
-              controller.addTask({
+              addTask({
                 title: taskTitle.trim(),
                 description: taskDescription.trim(),
-                categoryId: controller.selectedCategoryId,
+                categoryId: selectedCategoryId,
               });
 
               setTaskTitle("");
@@ -276,6 +340,7 @@ export function TaskManagerView({
             <label>
               <span>Название задачи</span>
               <input
+                data-bench="task-title-input"
                 onChange={(event) => setTaskTitle(event.target.value)}
                 placeholder="Например: Подготовить главу о benchmark"
                 value={taskTitle}
@@ -285,6 +350,7 @@ export function TaskManagerView({
             <label>
               <span>Описание</span>
               <textarea
+                data-bench="task-description-input"
                 onChange={(event) => setTaskDescription(event.target.value)}
                 placeholder="Кратко опишите цель задачи"
                 rows={4}
@@ -308,9 +374,9 @@ export function TaskManagerView({
                 return;
               }
 
-              controller.addCategory({
+              addCategory({
                 title: categoryTitle.trim(),
-                parentId: controller.selectedCategoryId,
+                parentId: selectedCategoryId,
               });
 
               setCategoryTitle("");
@@ -329,85 +395,131 @@ export function TaskManagerView({
             </button>
           </form>
         </article>
+      </RenderZone>
+    );
+  },
+  (previous, next) => previous.selectedCategoryId === next.selectedCategoryId,
+);
 
+const CategoryPanel = memo(
+  function CategoryPanel({
+    allCategories,
+    rootCategories,
+    selectedCategoryId,
+    selectCategory,
+  }: {
+    allCategories: Category[];
+    rootCategories: Category[];
+    selectedCategoryId: string | null;
+    selectCategory: (categoryId: string | null) => void;
+  }) {
+    return (
+      <RenderZone zone="category-panel">
         <article className="panel category-panel">
           <div className="panel-head">
             <div>
               <p className="eyebrow">Иерархия</p>
               <h3>Категории</h3>
             </div>
-            <span className="panel-note">{controller.allCategories.length} всего</span>
+            <span className="panel-note">{allCategories.length} всего</span>
           </div>
 
           <button
-            className={controller.selectedCategoryId === null ? "tree-button is-active" : "tree-button"}
-            onClick={() => controller.selectCategory(null)}
+            className={selectedCategoryId === null ? "tree-button is-active" : "tree-button"}
+            onClick={() => selectCategory(null)}
             type="button"
           >
             <span>Все категории</span>
           </button>
 
           <CategoryTree
-            activeId={controller.selectedCategoryId}
-            allCategories={controller.allCategories}
-            categories={controller.rootCategories}
-            onSelectCategory={controller.selectCategory}
+            activeId={selectedCategoryId}
+            allCategories={allCategories}
+            categories={rootCategories}
+            onSelectCategory={selectCategory}
           />
         </article>
+      </RenderZone>
+    );
+  },
+  (previous, next) =>
+    previous.allCategories === next.allCategories &&
+    previous.rootCategories === next.rootCategories &&
+    previous.selectedCategoryId === next.selectedCategoryId,
+);
 
+const ListPanel = memo(
+  function ListPanel({
+    tasks,
+    allCategories,
+    toggleTask,
+    deleteTask,
+  }: {
+    tasks: Task[];
+    allCategories: Category[];
+    toggleTask: (id: string) => void;
+    deleteTask: (id: string) => void;
+  }) {
+    return (
+      <RenderZone zone="list-panel">
         <article className="panel list-panel">
           <div className="panel-head">
             <div>
               <p className="eyebrow">Результат</p>
               <h3>Список задач</h3>
             </div>
-            <span className="panel-note">{controller.tasks.length} показано после фильтрации</span>
+            <span className="panel-note">{tasks.length} показано после фильтрации</span>
           </div>
 
           <div className="task-list">
-            {controller.tasks.map((task) => (
-              <div className="task-card" key={task.id}>
-                <div className="task-head">
-                  <div>
-                    <h4>{task.title}</h4>
-                    <p>{task.description || "Описание не задано"}</p>
+            {tasks.map((task) => {
+              trackRender(`task-card:${task.id}`);
+
+              return (
+                <div className="task-card" key={task.id}>
+                  <div className="task-head">
+                    <div>
+                      <h4>{task.title}</h4>
+                      <p>{task.description || "Описание не задано"}</p>
+                    </div>
+                    <span className={task.status === "completed" ? "badge is-done" : "badge"}>
+                      {task.status === "completed" ? "Выполнено" : "В работе"}
+                    </span>
                   </div>
-                  <span className={task.status === "completed" ? "badge is-done" : "badge"}>
-                    {task.status === "completed" ? "Выполнено" : "В работе"}
-                  </span>
-                </div>
 
-                <div className="task-meta">
-                  <span>
-                    Категория:{" "}
-                    <strong>
-                      {controller.allCategories.find((category) => category.id === task.categoryId)?.title ??
-                        "Без категории"}
-                    </strong>
-                  </span>
-                  <span>Идентификатор: {task.id}</span>
-                </div>
+                  <div className="task-meta">
+                    <span>
+                      Категория:{" "}
+                      <strong>
+                        {allCategories.find((category) => category.id === task.categoryId)?.title ??
+                          "Без категории"}
+                      </strong>
+                    </span>
+                    <span>Идентификатор: {task.id}</span>
+                  </div>
 
-                <div className="task-actions">
-                  <button
-                    className="secondary-button"
-                    onClick={() => controller.toggleTask(task.id)}
-                    type="button"
-                  >
-                    Переключить статус
-                  </button>
-                  <button
-                    className="ghost-button"
-                    onClick={() => controller.deleteTask(task.id)}
-                    type="button"
-                  >
-                    Удалить
-                  </button>
+                  <div className="task-actions">
+                    <button
+                      className="secondary-button"
+                      data-bench="toggle-task-button"
+                      onClick={() => toggleTask(task.id)}
+                      type="button"
+                    >
+                      Переключить статус
+                    </button>
+                    <button
+                      className="ghost-button"
+                      onClick={() => deleteTask(task.id)}
+                      type="button"
+                    >
+                      Удалить
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
-            {controller.tasks.length === 0 ? (
+            {tasks.length === 0 ? (
               <div className="empty-state">
                 <strong>По текущим фильтрам задач не найдено.</strong>
                 <p>Попробуйте изменить категорию, поиск или режим фильтрации.</p>
@@ -415,63 +527,183 @@ export function TaskManagerView({
             ) : null}
           </div>
         </article>
-      </section>
+      </RenderZone>
+    );
+  },
+  (previous, next) =>
+    previous.tasks === next.tasks &&
+    previous.allCategories === next.allCategories,
+);
 
-      <section className="panel history-panel">
-        <div className="history-top">
-          <div className="panel-head">
-            <div>
-              <p className="eyebrow">Time-travel</p>
-              <h3>История изменений</h3>
-            </div>
-            <span className="panel-note">
-              Снимок {controller.historyIndex + 1} из {controller.history.length}
-            </span>
-          </div>
+const HistoryPanel = memo(
+  function HistoryPanel({
+    history,
+    historyIndex,
+    canUndo,
+    canRedo,
+    undo,
+    redo,
+    timeTravel,
+  }: {
+    history: ReadonlyArray<HistoryEntry>;
+    historyIndex: number;
+    canUndo: boolean;
+    canRedo: boolean;
+    undo: () => void;
+    redo: () => void;
+    timeTravel: (index: number) => void;
+  }) {
+    const historyProgress =
+      history.length > 1 ? Math.round((historyIndex / (history.length - 1)) * 100) : 0;
 
-          <div className="history-actions">
-            <button
-              className="secondary-button"
-              disabled={!controller.canUndo}
-              onClick={controller.undo}
-              type="button"
-            >
-              Undo
-            </button>
-            <button
-              className="secondary-button"
-              disabled={!controller.canRedo}
-              onClick={controller.redo}
-              type="button"
-            >
-              Redo
-            </button>
-          </div>
-        </div>
-
-        <div aria-hidden="true" className="history-progress">
-          <div className="history-progress-fill" style={{ width: `${historyProgress}%` }} />
-        </div>
-
-        <div className="history-list">
-          {controller.history.map((snapshot) => (
-            <button
-              className={snapshot.index === controller.historyIndex ? "history-item is-active" : "history-item"}
-              key={snapshot.index}
-              onClick={() => controller.timeTravel(snapshot.index)}
-              type="button"
-            >
+    return (
+      <RenderZone zone="history-panel">
+        <section className="panel history-panel">
+          <div className="history-top">
+            <div className="panel-head">
               <div>
-                <span>Снимок {snapshot.index}</span>
-                <small>
-                  {snapshot.state.tasks.length} задач, {snapshot.state.categories.length} категорий
-                </small>
+                <p className="eyebrow">Time-travel</p>
+                <h3>История изменений</h3>
               </div>
-              <strong>{snapshot.index === controller.historyIndex ? "Текущий" : "Открыть"}</strong>
-            </button>
-          ))}
-        </div>
+              <span className="panel-note">
+                Снимок {historyIndex + 1} из {history.length}
+              </span>
+            </div>
+
+            <div className="history-actions">
+              <button
+                className="secondary-button"
+                data-bench="undo-button"
+                disabled={!canUndo}
+                onClick={undo}
+                type="button"
+              >
+                Undo
+              </button>
+              <button
+                className="secondary-button"
+                disabled={!canRedo}
+                onClick={redo}
+                type="button"
+              >
+                Redo
+              </button>
+            </div>
+          </div>
+
+          <div aria-hidden="true" className="history-progress">
+            <div className="history-progress-fill" style={{ width: `${historyProgress}%` }} />
+          </div>
+
+          <div className="history-list">
+            {history.map((snapshot) => {
+              trackRender(`history-item:${snapshot.index}`);
+
+              return (
+                <button
+                  className={snapshot.index === historyIndex ? "history-item is-active" : "history-item"}
+                  key={snapshot.index}
+                  onClick={() => timeTravel(snapshot.index)}
+                  type="button"
+                >
+                  <div>
+                    <span>Снимок {snapshot.index}</span>
+                    <small>
+                      {snapshot.state.tasks.length} задач, {snapshot.state.categories.length} категорий
+                    </small>
+                  </div>
+                  <strong>{snapshot.index === historyIndex ? "Текущий" : "Открыть"}</strong>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      </RenderZone>
+    );
+  },
+  (previous, next) =>
+    previous.history === next.history &&
+    previous.historyIndex === next.historyIndex &&
+    previous.canUndo === next.canUndo &&
+    previous.canRedo === next.canRedo,
+);
+
+/**
+ * Единый UI для сравнения реализаций на разных библиотеках управления состоянием.
+ */
+export function TaskManagerView({
+  controller,
+}: {
+  controller: TaskManagerController;
+}) {
+  trackRender("task-manager-view");
+
+  const selectedCategoryTitle = useMemo(() => {
+    if (!controller.selectedCategoryId) {
+      return "Все категории";
+    }
+
+    return (
+      controller.allCategories.find((category) => category.id === controller.selectedCategoryId)?.title ??
+      "Выбранная категория"
+    );
+  }, [controller.allCategories, controller.selectedCategoryId]);
+
+  return (
+    <main className="page">
+      <HeroSection
+        filter={controller.filter}
+        historyIndex={controller.historyIndex}
+        historyLength={controller.history.length}
+        libraryDescription={controller.libraryDescription}
+        libraryName={controller.libraryName}
+        selectedCategoryTitle={selectedCategoryTitle}
+        sort={controller.sort}
+      />
+
+      <section className="dashboard">
+        <StatsPanel operationsCount={controller.operationsCount} stats={controller.stats} />
+        <ControlsPanel
+          filter={controller.filter}
+          search={controller.search}
+          setFilter={controller.setFilter}
+          setSearch={controller.setSearch}
+          setSort={controller.setSort}
+          sort={controller.sort}
+        />
       </section>
+
+      <section className="workspace">
+        <FormPanel
+          addCategory={controller.addCategory}
+          addTask={controller.addTask}
+          selectedCategoryId={controller.selectedCategoryId}
+        />
+
+        <CategoryPanel
+          allCategories={controller.allCategories}
+          rootCategories={controller.rootCategories}
+          selectCategory={controller.selectCategory}
+          selectedCategoryId={controller.selectedCategoryId}
+        />
+
+        <ListPanel
+          allCategories={controller.allCategories}
+          deleteTask={controller.deleteTask}
+          tasks={controller.tasks}
+          toggleTask={controller.toggleTask}
+        />
+      </section>
+
+      <HistoryPanel
+        canRedo={controller.canRedo}
+        canUndo={controller.canUndo}
+        history={controller.history}
+        historyIndex={controller.historyIndex}
+        redo={controller.redo}
+        timeTravel={controller.timeTravel}
+        undo={controller.undo}
+      />
     </main>
   );
 }

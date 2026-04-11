@@ -1,4 +1,4 @@
-import { Store } from "kiks/core";
+import { Store } from "../../../../packages/kiks/src/core";
 
 import { createInitialTaskState } from "../../shared/taskModel";
 import type { TaskActionUnion } from "./actions";

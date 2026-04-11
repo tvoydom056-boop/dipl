@@ -1,6 +1,7 @@
 # Результаты бенчмарков
 
-Дата замера: 2026-04-06
+Дата замера: 2026-04-08 00:13:13
+Источник данных: `demo/src/generated/benchmark-results.json`
 
 ## Dispatch benchmark
 
@@ -8,10 +9,10 @@
 
 | Библиотека | ops/sec | Время, ms |
 |---|---:|---:|
-| Zustand | 421910.49 | 237.02 |
-| kiks | 251052.92 | 398.32 |
-| MobX | 12623.31 | 7921.85 |
-| Redux Toolkit | 8016.85 | 12473.73 |
+| Zustand | 153306.80 | 652.29 |
+| kiks | 118807.09 | 841.70 |
+| MobX | 4569.96 | 21882.04 |
+| Redux Toolkit | 2988.33 | 33463.50 |
 
 ## Bundle benchmark
 
@@ -19,10 +20,10 @@
 
 | Библиотека | Raw, kB | Gzip, kB |
 |---|---:|---:|
-| kiks | 213.36 | 66.58 |
-| Redux Toolkit | 224.76 | 71.36 |
-| Zustand | 202.63 | 63.08 |
-| MobX | 262.86 | 80.06 |
+| kiks | 205.86 | 63.90 |
+| Redux Toolkit | 225.54 | 71.58 |
+| Zustand | 203.41 | 63.35 |
+| MobX | 263.64 | 80.31 |
 
 ## Bundle benchmark: kiks library only
 
@@ -34,13 +35,20 @@
 
 ## Rerender benchmark
 
-Автоматический CLI-замер не выполняется.
-Для дипломной работы показатель рекомендуется снимать вручную через React DevTools Profiler на одинаковом сценарии:
+Сценарий: автоматический benchmark в `jsdom` с монтированием каждой реализации в React `Profiler` и выполнением четырёх одинаковых действий: `addTask`, `toggleTask`, `setSearch`, `undo`.
 
-1. Добавление задачи
-2. Переключение статуса задачи
-3. Изменение строки поиска
-4. Переход по history snapshot
+| Библиотека | Commits | Changed components |
+|---|---:|---:|
+| kiks | 4 | 73 |
+| Redux Toolkit | 4 | 73 |
+| Zustand | 4 | 73 |
+| MobX | 4 | 73 |
+
+Детализация по сценариям для `kiks`:
+- `addTask`: 1 commit, 18 changed components
+- `toggleTask`: 1 commit, 19 changed components
+- `setSearch`: 1 commit, 16 changed components
+- `undo`: 1 commit, 20 changed components
 
 ## Замечание
 
@@ -49,3 +57,5 @@
 Это позволяет честно разделять две метрики:
 1. размер прикладного стенда на конкретной реализации;
 2. размер публикуемой библиотеки как npm-пакета.
+
+Показатель `re-render` теперь тоже формируется автоматически, но его нужно интерпретировать как benchmark логических UI-зон и React commits в одинаковом общем интерфейсе, а не как прямой экспорт значений из браузерного DevTools.

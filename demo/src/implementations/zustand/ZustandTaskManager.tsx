@@ -40,7 +40,7 @@ function updateTimelineState(
   );
 }
 
-const useZustandTaskStore = create<ZustandTaskStore>((set) => ({
+export const useZustandTaskStore = create<ZustandTaskStore>((set) => ({
   timeline: [createInitialTaskState()],
   pointer: 0,
   addTask: (input) =>
@@ -145,6 +145,28 @@ const useZustandTaskStore = create<ZustandTaskStore>((set) => ({
       pointer: index >= 0 && index < state.timeline.length ? index : state.pointer,
     })),
 }));
+
+export const zustandBenchmarkApi = {
+  addTask() {
+    useZustandTaskStore.getState().addTask({
+      title: "Benchmark task",
+      description: "Generated during rerender benchmark",
+      categoryId: null,
+    });
+  },
+  toggleTask() {
+    const firstTaskId = useZustandTaskStore.getState().timeline[useZustandTaskStore.getState().pointer].tasks[0]?.id;
+    if (firstTaskId) {
+      useZustandTaskStore.getState().toggleTask(firstTaskId);
+    }
+  },
+  setSearch() {
+    useZustandTaskStore.getState().setSearch("ui");
+  },
+  undo() {
+    useZustandTaskStore.getState().undo();
+  },
+};
 
 export function ZustandTaskManager() {
   const timeline = useZustandTaskStore((state) => state.timeline);

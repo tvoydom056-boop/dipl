@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { comparisonMetricRows } from "./benchmarkResults";
+
 type ImplementationKey = "kiks" | "redux" | "zustand" | "mobx";
 type ComparisonViewMode = "cards" | "lines";
 type ComparisonScope = "all" | "active";
@@ -10,8 +12,10 @@ interface MetricRow {
   title: string;
   dispatchOps: number;
   bundleGzipKb: number;
+  rerenderChangedComponents: number;
+  rerenderCommits: number;
+  rerenderSummary: string;
   rerenderScore: number;
-  rerenderLabel: string;
   timeTravel: string;
   selectors: string;
   dependencies: string;
@@ -41,65 +45,11 @@ interface CapabilityVisualCardProps {
   activeImplementation: ImplementationKey;
 }
 
-const metricRows: MetricRow[] = [
-  {
-    key: "kiks",
-    title: "kiks",
-    dispatchOps: 251052.92,
-    bundleGzipKb: 65.87,
-    rerenderScore: 92,
-    rerenderLabel: "Высокий контроль",
-    timeTravel: "Встроен",
-    selectors: "Встроены",
-    dependencies: "React peer only",
-    colorClass: "kiks",
-    colorHex: "#2d5b8f",
-  },
-  {
-    key: "redux",
-    title: "Redux Toolkit",
-    dispatchOps: 8016.85,
-    bundleGzipKb: 70.59,
-    rerenderScore: 66,
-    rerenderLabel: "Средний контроль",
-    timeTravel: "Через DevTools",
-    selectors: "Частично",
-    dependencies: "Redux ecosystem",
-    colorClass: "redux",
-    colorHex: "#7f49b3",
-  },
-  {
-    key: "zustand",
-    title: "Zustand",
-    dispatchOps: 421910.49,
-    bundleGzipKb: 62.31,
-    rerenderScore: 90,
-    rerenderLabel: "Высокий контроль",
-    timeTravel: "Кастомно",
-    selectors: "Частично",
-    dependencies: "Zustand runtime",
-    colorClass: "zustand",
-    colorHex: "#2d8d7e",
-  },
-  {
-    key: "mobx",
-    title: "MobX",
-    dispatchOps: 12623.31,
-    bundleGzipKb: 79.31,
-    rerenderScore: 62,
-    rerenderLabel: "Средний контроль",
-    timeTravel: "Кастомно",
-    selectors: "Нет",
-    dependencies: "MobX runtime",
-    colorClass: "mobx",
-    colorHex: "#c5772f",
-  },
-];
-
-const maxDispatch = Math.max(...metricRows.map((row) => row.dispatchOps));
-const maxBundle = Math.max(...metricRows.map((row) => row.bundleGzipKb));
-const minBundle = Math.min(...metricRows.map((row) => row.bundleGzipKb));
-const maxRerenderScore = 100;
+const metricRows = comparisonMetricRows satisfies MetricRow[];
+const maxDispatch = Math.max(...metricRows.map((row) => row.dispatchOps), 1);
+const maxBundle = Math.max(...metricRows.map((row) => row.bundleGzipKb), 1);
+const minBundle = Math.min(...metricRows.map((row) => row.bundleGzipKb), 0);
+const maxRerender = Math.max(...metricRows.map((row) => row.rerenderChangedComponents), 1);
 
 function formatNumber(value: number): string {
   return new Intl.NumberFormat("ru-RU", {
@@ -391,7 +341,10 @@ function MetricLineChart({
                         x: point.x,
                         y: point.y,
                         label: point.row.title,
-                        value: labelFormatter(point.value),
+                        value:
+                          metric === "rerender"
+                            ? `${point.row.rerenderChangedComponents} зон / ${point.row.rerenderCommits} commits`
+                            : labelFormatter(point.value),
                       })
                     }
                     onMouseLeave={() => setHoveredPoint(null)}
@@ -407,7 +360,9 @@ function MetricLineChart({
                     x={point.x}
                     y={point.y < paddingTop + 32 ? point.y + 30 : point.y - 16}
                   >
-                    {labelFormatter(point.value)}
+                    {metric === "rerender"
+                      ? `${point.row.rerenderChangedComponents}`
+                      : labelFormatter(point.value)}
                   </text>
                 </g>
               );
@@ -579,10 +534,10 @@ export function ComparisonDashboard({
             <div className="panel-head">
               <div>
                 <p className="eyebrow">График 3</p>
-                <h2>Re-render control</h2>
+                <h2>Re-render</h2>
               </div>
               <span className="panel-note">
-                Архитектурная оценка контроля UI-обновлений до Profiler-замера
+                Чем длиннее шкала, тем меньше суммарных перерисованных UI-зон по 4 сценариям
               </span>
             </div>
 
@@ -599,7 +554,7 @@ export function ComparisonDashboard({
                 >
                   <div className="metric-row-head">
                     <strong>{row.title}</strong>
-                    <span>{row.rerenderLabel}</span>
+                    <span>{row.rerenderSummary}</span>
                   </div>
                   <div className="metric-bar-track">
                     <div
@@ -688,13 +643,14 @@ export function ComparisonDashboard({
 
           <MetricLineChart
             activeImplementation={activeImplementation}
-            labelFormatter={(value) => `${Math.round(value)}/100`}
-            maxValue={maxRerenderScore}
+            invert
+            labelFormatter={(value) => `${Math.round(value)} зон`}
+            maxValue={maxRerender}
             metric="rerender"
             rows={comparisonRows}
-            selector={(row) => row.rerenderScore}
-            subtitle="Архитектурная оценка контроля re-render: показывает, насколько библиотека помогает ограничивать лишние UI-обновления"
-            title="Re-render control"
+            selector={(row) => row.rerenderChangedComponents}
+            subtitle="Реальный benchmark по commits и перерисованным UI-зонам после add task, toggle task, set search и undo"
+            title="Re-render"
           />
 
           <CapabilityVisualCard

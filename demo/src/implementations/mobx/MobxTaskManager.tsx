@@ -152,7 +152,29 @@ class MobxTaskStore {
   }
 }
 
-const mobxTaskStore = new MobxTaskStore();
+export const mobxTaskStore = new MobxTaskStore();
+
+export const mobxBenchmarkApi = {
+  addTask() {
+    mobxTaskStore.addTask({
+      title: "Benchmark task",
+      description: "Generated during rerender benchmark",
+      categoryId: null,
+    });
+  },
+  toggleTask() {
+    const firstTaskId = mobxTaskStore.currentState.tasks[0]?.id;
+    if (firstTaskId) {
+      mobxTaskStore.toggleTask(firstTaskId);
+    }
+  },
+  setSearch() {
+    mobxTaskStore.setSearch("ui");
+  },
+  undo() {
+    mobxTaskStore.undo();
+  },
+};
 
 export const MobxTaskManager = observer(function MobxTaskManager() {
   const currentState = mobxTaskStore.currentState;

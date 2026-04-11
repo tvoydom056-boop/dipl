@@ -4,6 +4,13 @@ import { KiksTaskManager } from "./implementations/kiks/KiksTaskManager";
 import { MobxTaskManager } from "./implementations/mobx/MobxTaskManager";
 import { ReduxTaskManager } from "./implementations/redux/ReduxTaskManager";
 import { ZustandTaskManager } from "./implementations/zustand/ZustandTaskManager";
+import {
+  benchmarkResults,
+  comparisonOverviewRows,
+  librarySizeFact,
+  rerenderBreakdownRows,
+  rerenderScenarioRows,
+} from "./shared/benchmarkResults";
 import { ComparisonDashboard } from "./shared/ComparisonDashboard";
 
 type ImplementationKey = "kiks" | "redux" | "zustand" | "mobx";
@@ -58,7 +65,7 @@ const comparisonFacts = [
   },
   {
     label: "Метрики",
-    value: "dispatch, bundle size, rerender, boilerplate",
+    value: "dispatch, bundle size, re-render, library size",
   },
 ];
 
@@ -69,11 +76,6 @@ const quickNavigation = [
   { href: "#comparison-dashboard", label: "Графики" },
   { href: "#architecture", label: "Архитектура" },
   { href: "#live-demo", label: "Демо" },
-];
-
-const librarySizeFacts = [
-  { label: "kiks runtime package", raw: "4.30 kB", gzip: "1.99 kB", note: "production runtime библиотеки" },
-  { label: "Целевая граница", raw: "до 6 kB", gzip: "до 3 kB", note: "требование дипломного проекта" },
 ];
 
 const architectureSteps = [
@@ -103,48 +105,11 @@ const architectureSteps = [
   },
 ];
 
-const benchmarkRows = [
-  {
-    library: "kiks",
-    dispatch: "251 052.92",
-    bundle: "66.58 kB",
-    rerender: "Высокий контроль",
-    timeTravel: "Встроен",
-    selectors: "Встроены",
-  },
-  {
-    library: "Redux Toolkit",
-    dispatch: "8 016.85",
-    bundle: "71.36 kB",
-    rerender: "Средний контроль",
-    timeTravel: "Внешний инструмент",
-    selectors: "Частично",
-  },
-  {
-    library: "Zustand",
-    dispatch: "421 910.49",
-    bundle: "63.08 kB",
-    rerender: "Высокий контроль",
-    timeTravel: "Кастомно",
-    selectors: "Частично",
-  },
-  {
-    library: "MobX",
-    dispatch: "12 623.31",
-    bundle: "80.06 kB",
-    rerender: "Средний контроль",
-    timeTravel: "Кастомно",
-    selectors: "Нет",
-  },
-];
-
-const rerenderScenarios = ["add task", "toggle task", "set search", "undo"];
-const rerenderResultRows = [
-  { library: "kiks", commits: "—", changedComponents: "—", note: "Заполнить после Profiler" },
-  { library: "Redux Toolkit", commits: "—", changedComponents: "—", note: "Заполнить после Profiler" },
-  { library: "Zustand", commits: "—", changedComponents: "—", note: "Заполнить после Profiler" },
-  { library: "MobX", commits: "—", changedComponents: "—", note: "Заполнить после Profiler" },
-];
+function formatNumber(value: number): string {
+  return new Intl.NumberFormat("ru-RU", {
+    maximumFractionDigits: 2,
+  }).format(value);
+}
 
 export function App() {
   const [activeImplementation, setActiveImplementation] = useState<ImplementationKey>("kiks");
@@ -224,7 +189,9 @@ export function App() {
                 <p className="eyebrow">Сравнение</p>
                 <h2>Ключевые метрики стенда</h2>
               </div>
-              <span className="panel-note">Актуальные значения из benchmark-сценария</span>
+              <span className="panel-note">
+                Данные берутся из автогенерируемого benchmark-results.json
+              </span>
             </div>
 
             <div className="comparison-table comparison-table--extended">
@@ -233,11 +200,12 @@ export function App() {
                 <span>Dispatch ops/sec</span>
                 <span>Bundle gzip</span>
                 <span>Re-render</span>
+                <span>Breakdown</span>
                 <span>Time-travel</span>
                 <span>Селекторы</span>
               </div>
 
-              {benchmarkRows.map((row) => (
+              {comparisonOverviewRows.map((row) => (
                 <div
                   className={[
                     "comparison-row",
@@ -249,9 +217,10 @@ export function App() {
                   key={row.library}
                 >
                   <strong>{row.library}</strong>
-                  <span>{row.dispatch}</span>
-                  <span>{row.bundle}</span>
-                  <span>{row.rerender}</span>
+                  <span>{formatNumber(row.dispatch)}</span>
+                  <span>{formatNumber(row.bundle)} kB</span>
+                  <span>{row.rerenderSummary}</span>
+                  <span>{row.zoneSummary}</span>
                   <span>{row.timeTravel}</span>
                   <span>{row.selectors}</span>
                 </div>
@@ -288,47 +257,43 @@ export function App() {
                 <p className="eyebrow">React Metric</p>
                 <h2>Количество re-render</h2>
               </div>
-              <span className="panel-note">Измеряется через React DevTools Profiler</span>
+              <span className="panel-note">
+                Автоматический замер через React Profiler и render tracker
+              </span>
             </div>
 
             <div className="rerender-method">
               <div className="rerender-card">
                 <strong>Что показывает метрика</strong>
                 <p>
-                  Насколько библиотека эффективно работает с UI и сколько компонентов
-                  перерисовывается при типовом действии, а не только как быстро проходит `dispatch`.
+                  Насколько библиотека эффективно работает с UI и сколько логических зон интерфейса
+                  и commits она затрагивает при типовом действии.
                 </p>
               </div>
 
               <div className="rerender-card">
                 <strong>Как измеряется</strong>
                 <p>
-                  Для каждой библиотеки запускается один и тот же сценарий в React DevTools
-                  Profiler, после чего фиксируется число committed renders и изменившихся
-                  компонентов.
+                  Скрипт монтирует каждую реализацию в jsdom, выполняет add task, toggle task,
+                  set search и undo, а затем сохраняет commits и число реально перерисованных
+                  UI-зон.
                 </p>
               </div>
 
               <div className="rerender-card">
-                <strong>Сценарии</strong>
-                <ul className="rerender-scenarios">
-                  {rerenderScenarios.map((scenario) => (
-                    <li key={scenario}>{scenario}</li>
-                  ))}
-                </ul>
+                <strong>Последний прогон</strong>
+                <p>
+                  {benchmarkResults.generatedAt
+                    ? new Date(benchmarkResults.generatedAt).toLocaleString("ru-RU")
+                    : "данные ещё не сгенерированы"}
+                </p>
               </div>
             </div>
 
-            <p className="rerender-note">
-              В общей таблице выше сейчас показана архитектурная сравнительная оценка контроля
-              re-render. Точные численные значения фиксируются отдельно через React DevTools
-              Profiler и вносятся в шаблон результатов ниже.
-            </p>
-
             <div className="rerender-results">
               <div className="rerender-results-head">
-                <strong>Шаблон для фиксации результатов Profiler</strong>
-                <span>После ручного замера сюда можно внести commits и число изменившихся компонентов</span>
+                <strong>Итог benchmark по re-render</strong>
+                <span>Чем меньше changed components, тем лучше контроль лишних UI-обновлений</span>
               </div>
 
               <div className="rerender-results-table">
@@ -336,16 +301,52 @@ export function App() {
                   <span>Библиотека</span>
                   <span>Commits</span>
                   <span>Changed components</span>
-                  <span>Статус</span>
+                  <span>Источник</span>
                 </div>
 
-                {rerenderResultRows.map((row) => (
+                {rerenderScenarioRows.map((row) => (
                   <div className="rerender-results-row" key={row.library}>
                     <strong>{row.library}</strong>
                     <span>{row.commits}</span>
                     <span>{row.changedComponents}</span>
                     <span>{row.note}</span>
                   </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rerender-breakdown">
+              <div className="rerender-results-head">
+                <strong>Breakdown по зонам интерфейса</strong>
+                <span>
+                  Отдельно видно, как часто затрагиваются `list`, `history`, `filters`, `stats`
+                  и другие зоны
+                </span>
+              </div>
+
+              <div className="rerender-breakdown-grid">
+                {rerenderBreakdownRows.map((row) => (
+                  <article className="rerender-breakdown-card" key={row.library}>
+                    <div className="rerender-breakdown-top">
+                      <strong>{row.library}</strong>
+                      <span>{row.zoneSummary}</span>
+                    </div>
+
+                    <div className="rerender-breakdown-meta">
+                      <span>{row.totalChangedComponents} зон</span>
+                      <span>{row.totalCommits} commits</span>
+                    </div>
+
+                    <div className="rerender-breakdown-list">
+                      {row.scenarios.map((scenarioRow) => (
+                        <div className="rerender-breakdown-row" key={`${row.library}-${scenarioRow.scenario}`}>
+                          <strong>{scenarioRow.scenario}</strong>
+                          <span>{scenarioRow.changedComponents} зон</span>
+                          <small>{scenarioRow.zoneSummary}</small>
+                        </div>
+                      ))}
+                    </div>
+                  </article>
                 ))}
               </div>
             </div>
@@ -364,21 +365,33 @@ export function App() {
           </div>
 
           <div className="library-size-grid">
-            {librarySizeFacts.map((fact) => (
-              <article className="library-size-card" key={fact.label}>
-                <span>{fact.label}</span>
-                <strong>{fact.gzip}</strong>
-                <small>gzip</small>
-                <div className="library-size-meta">
-                  <b>{fact.raw}</b>
-                  <em>{fact.note}</em>
-                </div>
-              </article>
-            ))}
+            <article className="library-size-card">
+              <span>kiks runtime package</span>
+              <strong>{librarySizeFact ? `${librarySizeFact.gzipKb.toFixed(2)} kB` : "—"}</strong>
+              <small>gzip</small>
+              <div className="library-size-meta">
+                <b>{librarySizeFact ? `${librarySizeFact.rawKb.toFixed(2)} kB raw` : "—"}</b>
+                <em>
+                  {librarySizeFact
+                    ? `${librarySizeFact.files} runtime files после production build`
+                    : "запустите npm run bench:bundle"}
+                </em>
+              </div>
+            </article>
+
+            <article className="library-size-card">
+              <span>Целевая граница</span>
+              <strong>до 3 kB</strong>
+              <small>gzip</small>
+              <div className="library-size-meta">
+                <b>до 6 kB raw</b>
+                <em>требование дипломного проекта</em>
+              </div>
+            </article>
 
             <article className="library-size-card library-size-card--highlight">
               <span>Почему это сильная метрика</span>
-              <strong>1.99 kB</strong>
+              <strong>{librarySizeFact ? `${librarySizeFact.gzipKb.toFixed(2)} kB` : "—"}</strong>
               <small>gzip для runtime `kiks`</small>
               <p>
                 Это показывает, что сама библиотека очень компактна даже с учетом встроенных

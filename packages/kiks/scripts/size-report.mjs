@@ -1,5 +1,5 @@
 import { gzipSync } from "node:zlib";
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const distDir = resolve(process.cwd(), "dist");
@@ -28,6 +28,17 @@ const gzipBytes = runtimeFiles.reduce(
 );
 
 const formatKb = (bytes) => (bytes / 1024).toFixed(2);
+const report = {
+  files: runtimeFiles.length,
+  rawKb: Number(formatKb(rawBytes)),
+  gzipKb: Number(formatKb(gzipBytes)),
+};
+
+writeFileSync(
+  resolve(process.cwd(), "size-report.json"),
+  `${JSON.stringify(report, null, 2)}\n`,
+  "utf8",
+);
 
 console.log("kiks library runtime size");
 console.log(`files: ${runtimeFiles.length}`);

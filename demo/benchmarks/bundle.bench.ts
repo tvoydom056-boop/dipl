@@ -1,17 +1,22 @@
-import { gzipSync } from "node:zlib";
+import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { gzipSync } from "node:zlib";
+
+import { updateBenchmarkResults } from "./results-store";
 
 const rootDir = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const implementations = ["kiks", "redux", "zustand", "mobx"] as const;
+const packageRootDir = resolve(rootDir, "..", "packages", "kiks");
 
 function formatKb(bytes: number): string {
   return (bytes / 1024).toFixed(2);
 }
 
-function buildEntry(implementation: (typeof implementations)[number]): { rawBytes: number; gzipBytes: number } {
+function buildEntry(
+  implementation: (typeof implementations)[number],
+): { rawBytes: number; gzipBytes: number } {
   const tempDir = resolve(rootDir, ".bench-temp");
   const entryPath = resolve(tempDir, `${implementation}.tsx`);
 
@@ -25,7 +30,7 @@ function buildEntry(implementation: (typeof implementations)[number]): { rawByte
       `import { ${implementation === "redux" ? "ReduxTaskManager" : implementation === "zustand" ? "ZustandTaskManager" : implementation === "mobx" ? "MobxTaskManager" : "KiksTaskManager"} } from "../src/implementations/${implementation}/${implementation === "redux" ? "ReduxTaskManager" : implementation === "zustand" ? "ZustandTaskManager" : implementation === "mobx" ? "MobxTaskManager" : "KiksTaskManager"}";`,
       'const root = document.createElement("div");',
       'document.body.appendChild(root);',
-      'ReactDOM.createRoot(root).render(',
+      "ReactDOM.createRoot(root).render(",
       "  <React.StrictMode>",
       implementation === "redux"
         ? "    <ReduxTaskManager />"
@@ -85,16 +90,55 @@ function buildEntry(implementation: (typeof implementations)[number]): { rawByte
   };
 }
 
-const results = implementations.map((implementation) => ({
-  implementation,
-  ...buildEntry(implementation),
+function readLibrarySizeReport(): { files: number; rawKb: number; gzipKb: number } {
+  execFileSync("cmd", ["/c", "npm", "run", "size"], {
+    cwd: packageRootDir,
+    stdio: "pipe",
+  });
+
+  const reportPath = resolve(packageRootDir, "size-report.json");
+  return JSON.parse(readFileSync(reportPath, "utf8")) as {
+    files: number;
+    rawKb: number;
+    gzipKb: number;
+  };
+}
+
+const bundleResults = Object.fromEntries(
+  implementations.map((implementation) => {
+    const result = buildEntry(implementation);
+
+    return [
+      implementation,
+      {
+        rawKb: Number(formatKb(result.rawBytes)),
+        gzipKb: Number(formatKb(result.gzipBytes)),
+      },
+    ];
+  }),
+) as Record<(typeof implementations)[number], { rawKb: number; gzipKb: number }>;
+
+const librarySize = readLibrarySizeReport();
+
+updateBenchmarkResults((current) => ({
+  ...current,
+  bundle: {
+    results: bundleResults,
+  },
+  librarySize: {
+    kiks: librarySize,
+  },
 }));
 
-console.log("Bundle benchmark по отдельным entry points");
-for (const result of results) {
+console.log("Bundle benchmark by separate entry points");
+for (const implementation of implementations) {
+  const result = bundleResults[implementation];
   console.log(
-    `${result.implementation.padEnd(10)} ${formatKb(result.rawBytes).padStart(8)} kB raw | ${formatKb(result.gzipBytes).padStart(8)} kB gzip`,
+    `${implementation.padEnd(10)} ${formatKb(result.rawKb * 1024).padStart(8)} kB raw | ${formatKb(result.gzipKb * 1024).padStart(8)} kB gzip`,
   );
 }
+
+console.log("kiks library runtime size");
+console.log(`${String(librarySize.files).padStart(4)} files | ${librarySize.rawKb.toFixed(2).padStart(8)} kB raw | ${librarySize.gzipKb.toFixed(2).padStart(8)} kB gzip`);
 
 rmSync(resolve(rootDir, ".bench-temp"), { force: true, recursive: true });
