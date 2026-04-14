@@ -12,6 +12,7 @@ import {
   rerenderScenarioRows,
 } from "./shared/benchmarkResults";
 import { ComparisonDashboard } from "./shared/ComparisonDashboard";
+import { MathAnalysisSection } from "./shared/MathAnalysisSection";
 
 type ImplementationKey = "kiks" | "redux" | "zustand" | "mobx";
 
@@ -72,6 +73,7 @@ const comparisonFacts = [
 const quickNavigation = [
   { href: "#overview", label: "Обзор" },
   { href: "#metrics", label: "Метрики" },
+  { href: "#math-analysis", label: "Мат анализ" },
   { href: "#library-size", label: "Размер kiks" },
   { href: "#comparison-dashboard", label: "Графики" },
   { href: "#architecture", label: "Архитектура" },
@@ -352,6 +354,8 @@ export function App() {
             </div>
           </article>
         </section>
+
+        <MathAnalysisSection />
 
         <section className="library-size-panel" id="library-size">
           <div className="panel-head">

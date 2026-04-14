@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.json && vite build",
-    "bench:dispatch": "tsx benchmarks/dispatch.bench.ts",
+    "bench:dispatch": "tsx ../benchmarks/dispatch.bench.ts",
     "bench:bundle": "tsx benchmarks/bundle.bench.ts",
     "bench:rerender": "tsx benchmarks/rerender.bench.tsx",
-    "bench": "npm run bench:dispatch && npm run bench:bundle && npm run bench:rerender"
+    "bench:score": "tsx ../benchmarks/weighted-score.ts",
+    "bench": "npm run bench:dispatch && npm run bench:bundle && npm run bench:rerender && npm run bench:score"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.9.1",

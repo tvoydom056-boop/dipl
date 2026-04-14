@@ -22,6 +22,16 @@ export type ComparisonMetricRow = {
   colorHex: string;
 };
 
+export type WeightedScoreRow = {
+  key: ImplementationKey;
+  title: string;
+  bundleScore: number;
+  speedScore: number;
+  dependencyScore: number;
+  featureScore: number;
+  weightedTotal: number;
+};
+
 const results = rawResults as BenchmarkResults;
 
 const implementationMeta: Record<
@@ -75,12 +85,49 @@ const implementationMeta: Record<
   },
 };
 
+const dependencyCounts: Record<ImplementationKey, number> = {
+  kiks: 0,
+  redux: 2,
+  zustand: 1,
+  mobx: 2,
+};
+
+const builtInFeatureScores: Record<ImplementationKey, number> = {
+  kiks: 10,
+  redux: 7,
+  zustand: 6,
+  mobx: 6,
+};
+
+export const weightedCriteria = {
+  bundleSize: 0.25,
+  dispatchSpeed: 0.35,
+  dependencies: 0.15,
+  builtInFeatures: 0.25,
+} as const;
+
 function calculateRerenderScore(totalChangedComponents: number, maxValue: number, minValue: number): number {
   if (maxValue === minValue) {
     return 100;
   }
 
   return ((maxValue - totalChangedComponents) / (maxValue - minValue)) * 100;
+}
+
+function normalizeHigherBetter(value: number, max: number): number {
+  if (max === 0) {
+    return 0;
+  }
+
+  return Number(((value / max) * 10).toFixed(2));
+}
+
+function normalizeLowerBetter(value: number, min: number): number {
+  if (value === 0) {
+    return 0;
+  }
+
+  return Number(((min / value) * 10).toFixed(2));
 }
 
 type RerenderZoneGroup =
@@ -208,3 +255,56 @@ export const rerenderBreakdownRows = implementationOrder.map((key) => {
 });
 
 export const librarySizeFact = results.librarySize.kiks;
+
+const minBundleSize = Math.min(
+  ...implementationOrder.map((key) => results.bundle.results[key]?.gzipKb ?? 0),
+);
+const maxDispatchSpeed = Math.max(
+  ...implementationOrder.map((key) => results.dispatch.results[key]?.opsPerSec ?? 0),
+);
+const minDependencyCount = Math.min(
+  ...implementationOrder.map((key) => dependencyCounts[key]),
+);
+const maxFeatureScore = Math.max(
+  ...implementationOrder.map((key) => builtInFeatureScores[key]),
+);
+
+export const weightedScoreRows: WeightedScoreRow[] = implementationOrder
+  .map((key) => {
+    const bundleScore = normalizeLowerBetter(
+      results.bundle.results[key]?.gzipKb ?? 0,
+      minBundleSize,
+    );
+    const speedScore = normalizeHigherBetter(
+      results.dispatch.results[key]?.opsPerSec ?? 0,
+      maxDispatchSpeed,
+    );
+    const dependencyScore = normalizeLowerBetter(
+      dependencyCounts[key] + 1,
+      minDependencyCount + 1,
+    );
+    const featureScore = normalizeHigherBetter(
+      builtInFeatureScores[key],
+      maxFeatureScore,
+    );
+
+    const weightedTotal = Number(
+      (
+        bundleScore * weightedCriteria.bundleSize +
+        speedScore * weightedCriteria.dispatchSpeed +
+        dependencyScore * weightedCriteria.dependencies +
+        featureScore * weightedCriteria.builtInFeatures
+      ).toFixed(2),
+    );
+
+    return {
+      key,
+      title: implementationMeta[key].title,
+      bundleScore,
+      speedScore,
+      dependencyScore,
+      featureScore,
+      weightedTotal,
+    };
+  })
+  .sort((left, right) => right.weightedTotal - left.weightedTotal);

@@ -272,6 +272,199 @@ label span,
   box-shadow: var(--shadow-soft);
 }
 
+.math-analysis-panel {
+  margin-top: 18px;
+  border: 1px solid var(--panel-border);
+  border-radius: 30px;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(100, 165, 255, 0.16), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(240, 176, 92, 0.18), transparent 28%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.94), rgba(244, 248, 253, 0.96));
+  box-shadow: var(--shadow-soft);
+}
+
+.math-analysis-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.math-analysis-grid--secondary {
+  grid-template-columns: 1.2fr 0.8fr;
+}
+
+.math-card {
+  padding: 20px;
+  border-radius: 26px;
+  border: 1px solid rgba(19, 34, 56, 0.08);
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.math-card--formula {
+  background:
+    radial-gradient(circle at top right, rgba(255, 203, 138, 0.18), transparent 34%),
+    rgba(255, 255, 255, 0.92);
+}
+
+.math-card--score {
+  background:
+    radial-gradient(circle at top left, rgba(79, 132, 224, 0.12), transparent 30%),
+    rgba(255, 255, 255, 0.92);
+}
+
+.math-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.math-card-head span {
+  color: #667890;
+  font-size: 0.92rem;
+  text-align: right;
+}
+
+.formula-stack,
+.bench-snapshot,
+.complexity-table,
+.math-score-table {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.formula-item {
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(19, 34, 56, 0.04);
+}
+
+.formula-item span,
+.bench-snapshot-row span {
+  color: #667890;
+}
+
+.formula-item code,
+.complexity-row code {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #172a45;
+  color: #f7fbff;
+  font-size: 1rem;
+}
+
+.formula-item p {
+  margin: 10px 0 0;
+  color: var(--ink-soft);
+}
+
+.weight-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.weight-row div {
+  padding: 14px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(212, 116, 45, 0.12), rgba(241, 170, 83, 0.18));
+}
+
+.weight-row span {
+  display: block;
+  color: #6b7c94;
+  font-size: 0.9rem;
+}
+
+.weight-row strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 1.5rem;
+}
+
+.math-score-row,
+.complexity-row {
+  display: grid;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(19, 34, 56, 0.04);
+}
+
+.math-score-row {
+  grid-template-columns: 1.15fr repeat(4, 0.7fr) 0.8fr;
+}
+
+.complexity-row {
+  grid-template-columns: 1fr 0.55fr 1.3fr;
+}
+
+.math-score-row--head,
+.complexity-row--head {
+  background: transparent;
+  padding: 0 4px 6px;
+}
+
+.math-score-row--head span,
+.complexity-row--head span {
+  color: #6b7c94;
+  font-size: 0.83rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.math-score-row.is-winner {
+  border: 1px solid rgba(212, 116, 45, 0.22);
+  background: linear-gradient(135deg, rgba(212, 116, 45, 0.12), rgba(241, 170, 83, 0.22));
+}
+
+.math-score-row.is-kiks strong:last-child {
+  color: #9b4f18;
+}
+
+.complexity-row span {
+  color: var(--ink-soft);
+}
+
+.bench-snapshot-row {
+  display: grid;
+  grid-template-columns: 1.1fr repeat(3, 0.9fr);
+  gap: 12px;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(19, 34, 56, 0.08);
+  background: rgba(19, 34, 56, 0.04);
+}
+
+.bench-snapshot-row.kiks {
+  background: linear-gradient(135deg, rgba(45, 91, 143, 0.08), rgba(255, 255, 255, 0.9));
+}
+
+.bench-snapshot-row.redux {
+  background: linear-gradient(135deg, rgba(127, 73, 179, 0.08), rgba(255, 255, 255, 0.9));
+}
+
+.bench-snapshot-row.zustand {
+  background: linear-gradient(135deg, rgba(45, 141, 126, 0.08), rgba(255, 255, 255, 0.9));
+}
+
+.bench-snapshot-row.mobx {
+  background: linear-gradient(135deg, rgba(197, 119, 47, 0.08), rgba(255, 255, 255, 0.9));
+}
+
+.bench-snapshot-row div {
+  display: grid;
+  gap: 6px;
+}
+
 .library-size-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1455,6 +1648,7 @@ textarea {
 @media (max-width: 1120px) {
   .masthead,
   .hero,
+  .math-analysis-grid,
   .comparison-showcase,
   .library-size-grid,
   .comparison-dashboard,
@@ -1487,15 +1681,24 @@ textarea {
   .facts-grid,
   .hero-summary,
   .stats-grid,
+  .weight-row,
   .project-nav,
   .switcher,
   .comparison-row,
+  .math-score-row,
+  .complexity-row,
+  .bench-snapshot-row,
   .capability-grid,
   .architecture-step {
     grid-template-columns: 1fr;
   }
 
   .comparison-row--head {
+    display: none;
+  }
+
+  .math-score-row--head,
+  .complexity-row--head {
     display: none;
   }
 

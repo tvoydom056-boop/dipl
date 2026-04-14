@@ -1,0 +1,12 @@
+{
+  "extends": "../demo/tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "typeRoots": ["../demo/node_modules/@types"],
+    "lib": ["ES2020", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true
+  },
+  "include": ["./*.ts"]
+}

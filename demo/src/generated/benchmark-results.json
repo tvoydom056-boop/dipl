@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-04-07T21:46:24.293Z",
+  "generatedAt": "2026-04-11T11:48:59.842Z",
   "dispatch": {
     "iterations": 100000,
     "results": {
       "kiks": {
         "name": "kiks",
-        "totalMs": 521.3853999999999,
-        "opsPerSec": 191796.7016337627
+        "totalMs": 783.8058999999998,
+        "opsPerSec": 128222.75636284238
       },
       "redux": {
         "name": "redux toolkit",
-        "totalMs": 16042.4671,
-        "opsPerSec": 6233.455202161518
+        "totalMs": 34988.015733333326,
+        "opsPerSec": 2858.257178976244
       },
       "zustand": {
         "name": "zustand",
-        "totalMs": 249.87870000000112,
-        "opsPerSec": 400194.17421332654
+        "totalMs": 735.8915666666629,
+        "opsPerSec": 136803.5742446279
       },
       "mobx": {
         "name": "mobx",
-        "totalMs": 9199.0867,
-        "opsPerSec": 10870.644365162902
+        "totalMs": 27977.16680000001,
+        "opsPerSec": 3574.4118922305584
       }
     }
   },
