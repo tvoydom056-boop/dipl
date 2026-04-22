@@ -3,6 +3,9 @@ import {
   implementationOrder,
   type BenchmarkResults,
   type ImplementationKey,
+  selectorStrategyOrder,
+  type SelectorCriterionKey,
+  type SelectorStrategyKey,
 } from "./benchmarkModel";
 
 export type ComparisonMetricRow = {
@@ -30,6 +33,31 @@ export type WeightedScoreRow = {
   dependencyScore: number;
   featureScore: number;
   weightedTotal: number;
+};
+
+export type SelectorStrategyRow = {
+  key: SelectorStrategyKey;
+  title: string;
+  description: string;
+  firstRunMs: number;
+  repeatRunMs: number;
+  unrelatedChangeMs: number;
+  relatedChangeMs: number;
+  recomputations: number;
+  cacheHits: number;
+  memoryUnits: number;
+  implementationScore: number;
+  integrationScore: number;
+  rerenderStability: number;
+};
+
+export type SelectorDecisionRow = {
+  key: SelectorStrategyKey;
+  title: string;
+  weightedSum: number;
+  topsis: number;
+  paretoStatus: string;
+  isWinner: boolean;
 };
 
 const results = rawResults as BenchmarkResults;
@@ -308,3 +336,66 @@ export const weightedScoreRows: WeightedScoreRow[] = implementationOrder
     };
   })
   .sort((left, right) => right.weightedTotal - left.weightedTotal);
+
+export const selectorAhpWeights = results.selectorStrategies?.ahp.weights ?? {
+  firstRun: 0,
+  repeatRun: 0,
+  unrelatedChange: 0,
+  memoryEfficiency: 0,
+  implementationSimplicity: 0,
+  integrationEase: 0,
+  rerenderStability: 0,
+};
+
+export const selectorWinner = results.selectorStrategies?.winner ?? "dependencies";
+
+export const selectorStrategyRows: SelectorStrategyRow[] = selectorStrategyOrder.map((key) => {
+  const row = results.selectorStrategies?.results[key];
+
+  return {
+    key,
+    title: row?.title ?? key,
+    description: row?.description ?? "",
+    firstRunMs: row?.firstRunMs ?? 0,
+    repeatRunMs: row?.repeatRunMs ?? 0,
+    unrelatedChangeMs: row?.unrelatedChangeMs ?? 0,
+    relatedChangeMs: row?.relatedChangeMs ?? 0,
+    recomputations: row?.recomputations ?? 0,
+    cacheHits: row?.cacheHits ?? 0,
+    memoryUnits: row?.memoryUnits ?? 0,
+    implementationScore: row?.implementationScore ?? 0,
+    integrationScore: row?.integrationScore ?? 0,
+    rerenderStability: row?.rerenderStability ?? 0,
+  };
+});
+
+const weightedSelectorScores = new Map(
+  (results.selectorStrategies?.weightedSum ?? []).map((row) => [row.key, row.score]),
+);
+const topsisSelectorScores = new Map(
+  (results.selectorStrategies?.topsis ?? []).map((row) => [row.key, row.score]),
+);
+const paretoSelectorStatus = new Map(
+  (results.selectorStrategies?.pareto ?? []).map((row) => [
+    row.key,
+    row.isEfficient ? "Pareto frontier" : `Dominated by ${row.dominatedBy.join(", ")}`,
+  ]),
+);
+
+export const selectorDecisionRows: SelectorDecisionRow[] = selectorStrategyRows
+  .map((row) => ({
+    key: row.key,
+    title: row.title,
+    weightedSum: weightedSelectorScores.get(row.key) ?? 0,
+    topsis: topsisSelectorScores.get(row.key) ?? 0,
+    paretoStatus: paretoSelectorStatus.get(row.key) ?? "No data",
+    isWinner: row.key === selectorWinner,
+  }))
+  .sort((left, right) => right.weightedSum - left.weightedSum);
+
+export const selectorAhpWeightRows = (
+  Object.entries(selectorAhpWeights) as Array<[SelectorCriterionKey, number]>
+).map(([criterion, weight]) => ({
+  criterion,
+  weight,
+}));

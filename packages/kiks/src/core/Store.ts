@@ -3,6 +3,7 @@ import { History } from "./History";
 import type { Reducer } from "./Reducer";
 import {
   createSelector,
+  isMemoizedSelector,
   type MemoizedSelector,
   type Selector,
 } from "./Selector";
@@ -82,6 +83,10 @@ export class Store<
    * Возвращает мемоизированный результат селектора для текущего состояния.
    */
   public select<TResult>(selector: Selector<TState, TResult>): TResult {
+    if (isMemoizedSelector(selector)) {
+      return selector(this.state);
+    }
+
     let memoizedSelector = this.selectorCache.get(selector) as
       | MemoizedSelector<TState, TResult>
       | undefined;

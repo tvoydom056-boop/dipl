@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-11T11:48:59.842Z",
+  "generatedAt": "2026-04-20T22:28:33.989Z",
   "dispatch": {
     "iterations": 100000,
     "results": {
@@ -363,5 +363,149 @@
       "rawKb": 4.3,
       "gzipKb": 1.99
     }
+  },
+  "selectorStrategies": {
+    "iterations": 400,
+    "results": {
+      "full-recompute": {
+        "title": "Full recompute",
+        "description": "Каждый вызов заново вычисляет весь производный результат без кеша.",
+        "firstRunMs": 0.334283,
+        "repeatRunMs": 0.316874,
+        "unrelatedChangeMs": 0.304973,
+        "relatedChangeMs": 0.317055,
+        "recomputations": 2124,
+        "cacheHits": 0,
+        "memoryUnits": 1,
+        "implementationScore": 10,
+        "integrationScore": 10,
+        "rerenderStability": 0
+      },
+      "last-result": {
+        "title": "Last-result cache",
+        "description": "Хранит последний результат и один грубый cache key без явного списка зависимостей.",
+        "firstRunMs": 0.307383,
+        "repeatRunMs": 0.000408,
+        "unrelatedChangeMs": 0.297761,
+        "relatedChangeMs": 0.329245,
+        "recomputations": 922,
+        "cacheHits": 1202,
+        "memoryUnits": 3,
+        "implementationScore": 8,
+        "integrationScore": 8,
+        "rerenderStability": 0
+      },
+      "state-reference": {
+        "title": "State reference memo",
+        "description": "Переиспользует значение только при повторном вызове с той же ссылкой на state.",
+        "firstRunMs": 0.352098,
+        "repeatRunMs": 0.000108,
+        "unrelatedChangeMs": 0.325005,
+        "relatedChangeMs": 0.331505,
+        "recomputations": 923,
+        "cacheHits": 1201,
+        "memoryUnits": 2,
+        "implementationScore": 9,
+        "integrationScore": 9,
+        "rerenderStability": 0
+      },
+      "dependencies": {
+        "title": "Dependency memo",
+        "description": "Сравнивает только нужные входные срезы и пересчитывает selector лишь при их изменении.",
+        "firstRunMs": 0.350063,
+        "repeatRunMs": 0.001268,
+        "unrelatedChangeMs": 0.000751,
+        "relatedChangeMs": 0.311874,
+        "recomputations": 522,
+        "cacheHits": 1602,
+        "memoryUnits": 7,
+        "implementationScore": 7,
+        "integrationScore": 9,
+        "rerenderStability": 1
+      }
+    },
+    "ahp": {
+      "weights": {
+        "firstRun": 0.08,
+        "repeatRun": 0.22,
+        "unrelatedChange": 0.22,
+        "memoryEfficiency": 0.08,
+        "implementationSimplicity": 0.1,
+        "integrationEase": 0.1,
+        "rerenderStability": 0.2
+      },
+      "consistencyRatio": 0
+    },
+    "weightedSum": [
+      {
+        "key": "dependencies",
+        "title": "Dependency memo",
+        "score": 6.804
+      },
+      {
+        "key": "state-reference",
+        "title": "State reference memo",
+        "score": 5.103
+      },
+      {
+        "key": "full-recompute",
+        "title": "Full recompute",
+        "score": 3.542
+      },
+      {
+        "key": "last-result",
+        "title": "Last-result cache",
+        "score": 3.255
+      }
+    ],
+    "topsis": [
+      {
+        "key": "dependencies",
+        "title": "Dependency memo",
+        "score": 8.368
+      },
+      {
+        "key": "last-result",
+        "title": "Last-result cache",
+        "score": 4.871
+      },
+      {
+        "key": "state-reference",
+        "title": "State reference memo",
+        "score": 4.843
+      },
+      {
+        "key": "full-recompute",
+        "title": "Full recompute",
+        "score": 1.667
+      }
+    ],
+    "pareto": [
+      {
+        "key": "full-recompute",
+        "title": "Full recompute",
+        "dominatedBy": [],
+        "isEfficient": true
+      },
+      {
+        "key": "last-result",
+        "title": "Last-result cache",
+        "dominatedBy": [],
+        "isEfficient": true
+      },
+      {
+        "key": "state-reference",
+        "title": "State reference memo",
+        "dominatedBy": [],
+        "isEfficient": true
+      },
+      {
+        "key": "dependencies",
+        "title": "Dependency memo",
+        "dominatedBy": [],
+        "isEfficient": true
+      }
+    ],
+    "winner": "dependencies"
   }
 }

@@ -1,42 +1,66 @@
 import { createSelector, type Selector } from "kiks";
 
 import {
-  getRootCategories,
-  getTaskStats,
-  getVisibleTasks,
+  getChildCategoriesFromList,
+  getRootCategoriesFromList,
+  getTaskStatsFromTasks,
+  getVisibleTasksFromInputs,
   type Category,
   type Task,
   type TaskState,
 } from "../../shared/taskModel";
 
 /**
- * Возвращает список категорий верхнего уровня.
+ * Returns top-level categories and skips recomputation when categories stay stable.
  */
-export const selectRootCategories = createSelector<TaskState, Category[]>(
-  (state) => getRootCategories(state),
+export const selectRootCategories = createSelector<TaskState, [Category[]], Category[]>(
+  [(state) => state.categories] as const,
+  (categories) => getRootCategoriesFromList(categories),
 );
 
 /**
- * Возвращает дочерние категории по идентификатору родителя.
+ * Returns child categories for a given parent id.
  */
 export function selectChildCategories(parentId: string | null): Selector<TaskState, Category[]> {
-  return createSelector((state: TaskState) =>
-    state.categories.filter((category) => category.parentId === parentId),
+  return createSelector<TaskState, [Category[]], Category[]>(
+    [(state) => state.categories] as const,
+    (categories) => getChildCategoriesFromList(categories, parentId),
   );
 }
 
 /**
- * Возвращает задачи с учётом поиска, фильтра и сортировки.
+ * Returns tasks filtered by search, status, category and sort mode.
  */
-export const selectVisibleTasks = createSelector<TaskState, Task[]>((state) => {
-  return getVisibleTasks(state);
-});
+export const selectVisibleTasks = createSelector<
+  TaskState,
+  [Task[], string, TaskState["filter"], TaskState["sort"], string | null],
+  Task[]
+>(
+  [
+    (state) => state.tasks,
+    (state) => state.search,
+    (state) => state.filter,
+    (state) => state.sort,
+    (state) => state.selectedCategoryId,
+  ] as const,
+  (tasks, search, filter, sort, selectedCategoryId) =>
+    getVisibleTasksFromInputs({
+      tasks,
+      search,
+      filter,
+      sort,
+      selectedCategoryId,
+    }),
+);
 
 /**
- * Сводные показатели по задачам.
+ * Returns summary statistics derived only from the task list.
  */
-export const selectTaskStats = createSelector<TaskState, {
+export const selectTaskStats = createSelector<TaskState, [Task[]], {
   total: number;
   active: number;
   completed: number;
-}>((state) => getTaskStats(state));
+}>(
+  [(state) => state.tasks] as const,
+  (tasks) => getTaskStatsFromTasks(tasks),
+);

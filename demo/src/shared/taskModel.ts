@@ -1,20 +1,20 @@
 /**
- * Статус отдельной задачи.
+ * Status for a single task.
  */
 export type TaskStatus = "active" | "completed";
 
 /**
- * Параметры сортировки списка задач.
+ * Supported task sort modes.
  */
 export type SortMode = "created-desc" | "created-asc" | "title-asc";
 
 /**
- * Режим фильтрации задач.
+ * Supported task filter modes.
  */
 export type FilterMode = "all" | "active" | "completed";
 
 /**
- * Категория задачи. Иерархия задаётся через parentId.
+ * Task category.
  */
 export interface Category {
   id: string;
@@ -23,7 +23,7 @@ export interface Category {
 }
 
 /**
- * Сущность задачи в demo-приложении.
+ * Task entity used in the demo application.
  */
 export interface Task {
   id: string;
@@ -35,7 +35,7 @@ export interface Task {
 }
 
 /**
- * Полное состояние demo-приложения.
+ * Full demo state shared by all implementations.
  */
 export interface TaskState {
   tasks: Task[];
@@ -48,7 +48,7 @@ export interface TaskState {
 }
 
 /**
- * Снимок истории изменений.
+ * History snapshot for time-travel controls.
  */
 export interface HistoryEntry {
   index: number;
@@ -56,7 +56,7 @@ export interface HistoryEntry {
 }
 
 /**
- * Статистика по задачам.
+ * Task statistics shown in the summary widgets.
  */
 export interface TaskStats {
   total: number;
@@ -64,10 +64,21 @@ export interface TaskStats {
   completed: number;
 }
 
+/**
+ * Inputs needed to derive the visible task list.
+ */
+export interface VisibleTaskInputs {
+  tasks: Task[];
+  search: string;
+  filter: FilterMode;
+  sort: SortMode;
+  selectedCategoryId: string | null;
+}
+
 const now = Date.now();
 
 /**
- * Возвращает начальное состояние для всех реализаций.
+ * Creates the initial state shared by every benchmark and implementation.
  */
 export function createInitialTaskState(): TaskState {
   return {
@@ -112,29 +123,59 @@ export function createInitialTaskState(): TaskState {
 }
 
 /**
- * Возвращает категории верхнего уровня.
+ * Returns only root categories.
  */
 export function getRootCategories(state: TaskState): Category[] {
-  return state.categories.filter((category) => category.parentId === null);
+  return getRootCategoriesFromList(state.categories);
 }
 
 /**
- * Возвращает видимый список задач.
+ * Returns only root categories from a preselected category list.
+ */
+export function getRootCategoriesFromList(categories: Category[]): Category[] {
+  return categories.filter((category) => category.parentId === null);
+}
+
+/**
+ * Returns child categories for a given parent id.
+ */
+export function getChildCategoriesFromList(
+  categories: Category[],
+  parentId: string | null,
+): Category[] {
+  return categories.filter((category) => category.parentId === parentId);
+}
+
+/**
+ * Returns the visible task list for the full state object.
  */
 export function getVisibleTasks(state: TaskState): Task[] {
-  const normalizedSearch = state.search.trim().toLowerCase();
+  return getVisibleTasksFromInputs({
+    tasks: state.tasks,
+    search: state.search,
+    filter: state.filter,
+    sort: state.sort,
+    selectedCategoryId: state.selectedCategoryId,
+  });
+}
 
-  return [...state.tasks]
+/**
+ * Returns the visible task list for explicit selector dependencies.
+ */
+export function getVisibleTasksFromInputs(inputs: VisibleTaskInputs): Task[] {
+  const normalizedSearch = inputs.search.trim().toLowerCase();
+
+  return [...inputs.tasks]
     .filter((task) => {
-      if (state.selectedCategoryId && task.categoryId !== state.selectedCategoryId) {
+      if (inputs.selectedCategoryId && task.categoryId !== inputs.selectedCategoryId) {
         return false;
       }
 
-      if (state.filter === "active" && task.status !== "active") {
+      if (inputs.filter === "active" && task.status !== "active") {
         return false;
       }
 
-      if (state.filter === "completed" && task.status !== "completed") {
+      if (inputs.filter === "completed" && task.status !== "completed") {
         return false;
       }
 
@@ -146,7 +187,7 @@ export function getVisibleTasks(state: TaskState): Task[] {
       return haystack.includes(normalizedSearch);
     })
     .sort((left, right) => {
-      switch (state.sort) {
+      switch (inputs.sort) {
         case "created-asc":
           return left.createdAt - right.createdAt;
         case "title-asc":
@@ -159,11 +200,18 @@ export function getVisibleTasks(state: TaskState): Task[] {
 }
 
 /**
- * Возвращает сводные показатели по задачам.
+ * Returns task statistics for the full state object.
  */
 export function getTaskStats(state: TaskState): TaskStats {
-  const completed = state.tasks.filter((task) => task.status === "completed").length;
-  const total = state.tasks.length;
+  return getTaskStatsFromTasks(state.tasks);
+}
+
+/**
+ * Returns task statistics for an explicit task list.
+ */
+export function getTaskStatsFromTasks(tasks: Task[]): TaskStats {
+  const completed = tasks.filter((task) => task.status === "completed").length;
+  const total = tasks.length;
 
   return {
     total,

@@ -1,7 +1,7 @@
 export { Action } from "./core/Action";
 export { History } from "./core/History";
 export { Reducer } from "./core/Reducer";
-export { createSelector } from "./core/Selector";
+export { createSelector, isMemoizedSelector } from "./core/Selector";
 export { Store } from "./core/Store";
 export { Provider } from "./react/Provider";
 export { useKiks } from "./react/useKiks";
@@ -24,8 +24,13 @@ export type {
 } from "./react/Provider";
 
 export type {
+  DependencySelectorOptions,
   MemoizedSelector,
   Selector,
+  SelectorDependency,
+  SelectorOptions,
+  SelectorStats,
+  SelectorStrategy,
 } from "./core/Selector";
 
 export type {

@@ -1,7 +1,7 @@
 export { Action } from "./Action";
 export { History } from "./History";
 export { Reducer } from "./Reducer";
-export { createSelector } from "./Selector";
+export { createSelector, isMemoizedSelector } from "./Selector";
 export { Store } from "./Store";
 
 export type {
@@ -10,8 +10,13 @@ export type {
 } from "./History";
 
 export type {
+  DependencySelectorOptions,
   MemoizedSelector,
   Selector,
+  SelectorDependency,
+  SelectorOptions,
+  SelectorStats,
+  SelectorStrategy,
 } from "./Selector";
 
 export type {
@@ -19,4 +24,3 @@ export type {
   StoreOptions,
   Unsubscribe,
 } from "./Store";
-

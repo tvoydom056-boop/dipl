@@ -1,5 +1,18 @@
 export type ImplementationKey = "kiks" | "redux" | "zustand" | "mobx";
 export type RerenderScenarioKey = "addTask" | "toggleTask" | "setSearch" | "undo";
+export type SelectorStrategyKey =
+  | "full-recompute"
+  | "last-result"
+  | "state-reference"
+  | "dependencies";
+export type SelectorCriterionKey =
+  | "firstRun"
+  | "repeatRun"
+  | "unrelatedChange"
+  | "memoryEfficiency"
+  | "implementationSimplicity"
+  | "integrationEase"
+  | "rerenderStability";
 
 export interface DispatchBenchEntry {
   name: string;
@@ -30,6 +43,34 @@ export interface LibrarySizeEntry {
   gzipKb: number;
 }
 
+export interface SelectorStrategyBenchEntry {
+  title: string;
+  description: string;
+  firstRunMs: number;
+  repeatRunMs: number;
+  unrelatedChangeMs: number;
+  relatedChangeMs: number;
+  recomputations: number;
+  cacheHits: number;
+  memoryUnits: number;
+  implementationScore: number;
+  integrationScore: number;
+  rerenderStability: number;
+}
+
+export interface SelectorMethodScoreEntry {
+  key: SelectorStrategyKey;
+  title: string;
+  score: number;
+}
+
+export interface ParetoEntry {
+  key: SelectorStrategyKey;
+  title: string;
+  dominatedBy: SelectorStrategyKey[];
+  isEfficient: boolean;
+}
+
 export interface BenchmarkResults {
   generatedAt: string | null;
   dispatch: {
@@ -46,6 +87,18 @@ export interface BenchmarkResults {
   librarySize: {
     kiks: LibrarySizeEntry | null;
   };
+  selectorStrategies: {
+    iterations: number;
+    results: Record<SelectorStrategyKey, SelectorStrategyBenchEntry>;
+    ahp: {
+      weights: Record<SelectorCriterionKey, number>;
+      consistencyRatio: number;
+    };
+    weightedSum: SelectorMethodScoreEntry[];
+    topsis: SelectorMethodScoreEntry[];
+    pareto: ParetoEntry[];
+    winner: SelectorStrategyKey;
+  };
 }
 
 export const implementationOrder: ImplementationKey[] = [
@@ -61,6 +114,37 @@ export const rerenderScenarioOrder: RerenderScenarioKey[] = [
   "setSearch",
   "undo",
 ];
+
+export const selectorStrategyOrder: SelectorStrategyKey[] = [
+  "full-recompute",
+  "last-result",
+  "state-reference",
+  "dependencies",
+];
+
+function createEmptySelectorStrategyEntry(key: SelectorStrategyKey): SelectorStrategyBenchEntry {
+  const titles: Record<SelectorStrategyKey, string> = {
+    "full-recompute": "Full recompute",
+    "last-result": "Last-result cache",
+    "state-reference": "State reference memo",
+    dependencies: "Dependency memo",
+  };
+
+  return {
+    title: titles[key],
+    description: "",
+    firstRunMs: 0,
+    repeatRunMs: 0,
+    unrelatedChangeMs: 0,
+    relatedChangeMs: 0,
+    recomputations: 0,
+    cacheHits: 0,
+    memoryUnits: 0,
+    implementationScore: 0,
+    integrationScore: 0,
+    rerenderStability: 0,
+  };
+}
 
 function createEmptyRerenderScenario(): RerenderScenarioEntry {
   return {
@@ -114,6 +198,31 @@ export function createEmptyBenchmarkResults(): BenchmarkResults {
     },
     librarySize: {
       kiks: null,
+    },
+    selectorStrategies: {
+      iterations: 0,
+      results: {
+        "full-recompute": createEmptySelectorStrategyEntry("full-recompute"),
+        "last-result": createEmptySelectorStrategyEntry("last-result"),
+        "state-reference": createEmptySelectorStrategyEntry("state-reference"),
+        dependencies: createEmptySelectorStrategyEntry("dependencies"),
+      },
+      ahp: {
+        weights: {
+          firstRun: 0,
+          repeatRun: 0,
+          unrelatedChange: 0,
+          memoryEfficiency: 0,
+          implementationSimplicity: 0,
+          integrationEase: 0,
+          rerenderStability: 0,
+        },
+        consistencyRatio: 0,
+      },
+      weightedSum: [],
+      topsis: [],
+      pareto: [],
+      winner: "dependencies",
     },
   };
 }
