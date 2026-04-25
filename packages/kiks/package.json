@@ -1,7 +1,7 @@
 {
   "name": "kiks",
   "version": "0.1.0",
-  "description": "Лёгкая библиотека управления состоянием для React-приложений",
+  "description": "Lightweight state management library for React applications",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

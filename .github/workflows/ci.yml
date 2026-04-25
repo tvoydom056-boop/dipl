@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - prod
+      - main
+      - master
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install kiks dependencies
+        run: npm ci
+        working-directory: packages/kiks
+
+      - name: Install demo dependencies
+        run: npm ci
+        working-directory: demo
+
+      - name: Test package
+        run: npm test
+        working-directory: packages/kiks
+
+      - name: Test benchmark analytics
+        run: npm run test:benchmarks
+        working-directory: demo
+
+      - name: Build package
+        run: npm run build
+        working-directory: packages/kiks
+
+      - name: Build demo
+        run: npm run build
+        working-directory: demo
