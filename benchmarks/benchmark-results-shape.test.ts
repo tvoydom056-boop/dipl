@@ -1,5 +1,5 @@
 import rawResults from "../demo/src/generated/benchmark-results.json";
-import { describe, expect, it } from "../demo/node_modules/vitest/dist/index";
+import { describe, expect, it } from "vitest";
 
 import type { BenchmarkResults } from "../demo/src/shared/benchmarkModel";
 

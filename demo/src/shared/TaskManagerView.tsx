@@ -1,27 +1,9 @@
-import {
-  memo,
-  type ReactNode,
-  useMemo,
-  useState,
-} from "react";
+import { memo, type ReactNode, useMemo, useState } from "react";
 
 import { trackRender } from "./renderTracker";
-import type {
-  Category,
-  FilterMode,
-  HistoryEntry,
-  SortMode,
-  Task,
-  TaskStats,
-} from "./taskModel";
+import type { Category, FilterMode, HistoryEntry, SortMode, Task, TaskStats } from "./taskModel";
 
-function RenderZone({
-  zone,
-  children,
-}: {
-  zone: string;
-  children: ReactNode;
-}) {
+function RenderZone({ zone, children }: { zone: string; children: ReactNode }) {
   trackRender(zone);
   return <>{children}</>;
 }
@@ -53,9 +35,7 @@ function CategoryTree({
         </button>
 
         {children.length > 0 ? (
-          <div className="tree-children">
-            {children.map((child) => renderNode(child))}
-          </div>
+          <div className="tree-children">{children.map((child) => renderNode(child))}</div>
         ) : null}
       </div>
     );
@@ -83,15 +63,8 @@ export interface TaskManagerController {
   historyIndex: number;
   canUndo: boolean;
   canRedo: boolean;
-  addTask(input: {
-    title: string;
-    description: string;
-    categoryId: string | null;
-  }): void;
-  addCategory(input: {
-    title: string;
-    parentId: string | null;
-  }): void;
+  addTask(input: { title: string; description: string; categoryId: string | null }): void;
+  addCategory(input: { title: string; parentId: string | null }): void;
   toggleTask(id: string): void;
   deleteTask(id: string): void;
   setSearch(value: string): void;
@@ -272,10 +245,7 @@ const ControlsPanel = memo(
 
             <label>
               <span>Сортировка</span>
-              <select
-                onChange={(event) => setSort(event.target.value as SortMode)}
-                value={sort}
-              >
+              <select onChange={(event) => setSort(event.target.value as SortMode)} value={sort}>
                 <option value="created-desc">Сначала новые</option>
                 <option value="created-asc">Сначала старые</option>
                 <option value="title-asc">По названию</option>
@@ -531,8 +501,7 @@ const ListPanel = memo(
     );
   },
   (previous, next) =>
-    previous.tasks === next.tasks &&
-    previous.allCategories === next.allCategories,
+    previous.tasks === next.tasks && previous.allCategories === next.allCategories,
 );
 
 const HistoryPanel = memo(
@@ -580,12 +549,7 @@ const HistoryPanel = memo(
               >
                 Undo
               </button>
-              <button
-                className="secondary-button"
-                disabled={!canRedo}
-                onClick={redo}
-                type="button"
-              >
+              <button className="secondary-button" disabled={!canRedo} onClick={redo} type="button">
                 Redo
               </button>
             </div>
@@ -601,7 +565,9 @@ const HistoryPanel = memo(
 
               return (
                 <button
-                  className={snapshot.index === historyIndex ? "history-item is-active" : "history-item"}
+                  className={
+                    snapshot.index === historyIndex ? "history-item is-active" : "history-item"
+                  }
                   key={snapshot.index}
                   onClick={() => timeTravel(snapshot.index)}
                   type="button"
@@ -609,7 +575,8 @@ const HistoryPanel = memo(
                   <div>
                     <span>Снимок {snapshot.index}</span>
                     <small>
-                      {snapshot.state.tasks.length} задач, {snapshot.state.categories.length} категорий
+                      {snapshot.state.tasks.length} задач, {snapshot.state.categories.length}{" "}
+                      категорий
                     </small>
                   </div>
                   <strong>{snapshot.index === historyIndex ? "Текущий" : "Открыть"}</strong>
@@ -631,11 +598,7 @@ const HistoryPanel = memo(
 /**
  * Единый UI для сравнения реализаций на разных библиотеках управления состоянием.
  */
-export function TaskManagerView({
-  controller,
-}: {
-  controller: TaskManagerController;
-}) {
+export function TaskManagerView({ controller }: { controller: TaskManagerController }) {
   trackRender("task-manager-view");
 
   const selectedCategoryTitle = useMemo(() => {
@@ -644,8 +607,8 @@ export function TaskManagerView({
     }
 
     return (
-      controller.allCategories.find((category) => category.id === controller.selectedCategoryId)?.title ??
-      "Выбранная категория"
+      controller.allCategories.find((category) => category.id === controller.selectedCategoryId)
+        ?.title ?? "Выбранная категория"
     );
   }, [controller.allCategories, controller.selectedCategoryId]);
 

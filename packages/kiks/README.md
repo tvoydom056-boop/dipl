@@ -116,8 +116,8 @@ Single-function selector:
 ```ts
 import { createSelector } from "kiks";
 
-const selectCompletedCount = createSelector((state: TodoState) =>
-  state.tasks.filter((task) => task.done).length,
+const selectCompletedCount = createSelector(
+  (state: TodoState) => state.tasks.filter((task) => task.done).length,
 );
 ```
 
@@ -125,10 +125,7 @@ Dependency-based selector:
 
 ```ts
 const selectVisibleTasks = createSelector(
-  [
-    (state: TodoState) => state.tasks,
-    (state: TodoState) => state.filter,
-  ] as const,
+  [(state: TodoState) => state.tasks, (state: TodoState) => state.filter] as const,
   (tasks, filter) => tasks.filter((task) => filter === "all" || task.status === filter),
 );
 ```
@@ -180,11 +177,7 @@ Context bridge for React components.
 Middleware composes around `dispatch` from right to left.
 
 ```ts
-import {
-  loggerMiddleware,
-  thunkMiddleware,
-  type Middleware,
-} from "kiks";
+import { loggerMiddleware, thunkMiddleware, type Middleware } from "kiks";
 
 const metricsMiddleware: Middleware<State, AppAction> =
   ({ getState, dispatch }) =>
@@ -256,10 +249,7 @@ export const taskStore = new Store<TaskState, TaskAction>({
 });
 
 export const selectVisibleTasks = createSelector(
-  [
-    (state: TaskState) => state.tasks,
-    (state: TaskState) => state.search,
-  ] as const,
+  [(state: TaskState) => state.tasks, (state: TaskState) => state.search] as const,
   (tasks, search) => {
     const query = search.trim().toLowerCase();
 

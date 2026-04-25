@@ -14,9 +14,10 @@ function formatKb(bytes: number): string {
   return (bytes / 1024).toFixed(2);
 }
 
-function buildEntry(
-  implementation: (typeof implementations)[number],
-): { rawBytes: number; gzipBytes: number } {
+function buildEntry(implementation: (typeof implementations)[number]): {
+  rawBytes: number;
+  gzipBytes: number;
+} {
   const tempDir = resolve(rootDir, ".bench-temp");
   const entryPath = resolve(tempDir, `${implementation}.tsx`);
 
@@ -29,7 +30,7 @@ function buildEntry(
       'import ReactDOM from "react-dom/client";',
       `import { ${implementation === "redux" ? "ReduxTaskManager" : implementation === "zustand" ? "ZustandTaskManager" : implementation === "mobx" ? "MobxTaskManager" : "KiksTaskManager"} } from "../src/implementations/${implementation}/${implementation === "redux" ? "ReduxTaskManager" : implementation === "zustand" ? "ZustandTaskManager" : implementation === "mobx" ? "MobxTaskManager" : "KiksTaskManager"}";`,
       'const root = document.createElement("div");',
-      'document.body.appendChild(root);',
+      "document.body.appendChild(root);",
       "ReactDOM.createRoot(root).render(",
       "  <React.StrictMode>",
       implementation === "redux"
@@ -73,7 +74,11 @@ function buildEntry(
   const distDir = resolve(rootDir, "dist-bench", implementation, "assets");
   const files = execFileSync(
     "powershell",
-    ["-NoProfile", "-Command", `Get-ChildItem -Path "${distDir}" -Filter *.js | Select-Object -ExpandProperty FullName`],
+    [
+      "-NoProfile",
+      "-Command",
+      `Get-ChildItem -Path "${distDir}" -Filter *.js | Select-Object -ExpandProperty FullName`,
+    ],
     { encoding: "utf8" },
   )
     .split(/\r?\n/)
@@ -139,6 +144,8 @@ for (const implementation of implementations) {
 }
 
 console.log("kiks library runtime size");
-console.log(`${String(librarySize.files).padStart(4)} files | ${librarySize.rawKb.toFixed(2).padStart(8)} kB raw | ${librarySize.gzipKb.toFixed(2).padStart(8)} kB gzip`);
+console.log(
+  `${String(librarySize.files).padStart(4)} files | ${librarySize.rawKb.toFixed(2).padStart(8)} kB raw | ${librarySize.gzipKb.toFixed(2).padStart(8)} kB gzip`,
+);
 
 rmSync(resolve(rootDir, ".bench-temp"), { force: true, recursive: true });

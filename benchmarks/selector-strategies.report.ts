@@ -55,7 +55,8 @@ const selectorMeta: Record<
   },
   "last-result": {
     title: "Last-result cache",
-    description: "Хранит последний результат и один грубый cache key без явного списка зависимостей.",
+    description:
+      "Хранит последний результат и один грубый cache key без явного списка зависимостей.",
     memoryUnits: 3,
     implementationScore: 8,
     integrationScore: 8,
@@ -69,7 +70,8 @@ const selectorMeta: Record<
   },
   dependencies: {
     title: "Dependency memo",
-    description: "Сравнивает только нужные входные срезы и пересчитывает selector лишь при их изменении.",
+    description:
+      "Сравнивает только нужные входные срезы и пересчитывает selector лишь при их изменении.",
     memoryUnits: 7,
     implementationScore: 7,
     integrationScore: 9,
@@ -136,16 +138,14 @@ function createStrategySelector(strategy: SelectorStrategyKey) {
         TaskState["selectedCategoryId"],
       ],
       ReturnType<typeof getVisibleTasksFromInputs>
-    >(
-      selectorDependencies,
-      (tasks, search, filter, sort, selectedCategoryId) =>
-        getVisibleTasksFromInputs({
-          tasks,
-          search,
-          filter,
-          sort,
-          selectedCategoryId,
-        }),
+    >(selectorDependencies, (tasks, search, filter, sort, selectedCategoryId) =>
+      getVisibleTasksFromInputs({
+        tasks,
+        search,
+        filter,
+        sort,
+        selectedCategoryId,
+      }),
     );
   }
 
@@ -261,7 +261,8 @@ function computeWeightedSum(results: Record<SelectorStrategyKey, SelectorStrateg
         normalizeLowerBetter(row.repeatRun, minRepeatRun) * ahpWeights.repeatRun +
         normalizeLowerBetter(row.unrelatedChange, minUnrelated) * ahpWeights.unrelatedChange +
         normalizeLowerBetter(row.memoryEfficiency, minMemory) * ahpWeights.memoryEfficiency +
-        normalizeHigherBetter(row.implementationSimplicity, maxImplementation) * ahpWeights.implementationSimplicity +
+        normalizeHigherBetter(row.implementationSimplicity, maxImplementation) *
+          ahpWeights.implementationSimplicity +
         normalizeHigherBetter(row.integrationEase, maxIntegration) * ahpWeights.integrationEase +
         normalizeHigherBetter(row.rerenderStability, maxStability) * ahpWeights.rerenderStability;
 
@@ -306,12 +307,10 @@ function computePareto(results: Record<SelectorStrategyKey, SelectorStrategyMetr
           candidate.unrelatedChangeMs <= row.unrelatedChangeMs &&
           candidate.rerenderStability >= row.rerenderStability &&
           candidate.implementationScore >= row.implementationScore &&
-          (
-            candidate.repeatRunMs < row.repeatRunMs ||
+          (candidate.repeatRunMs < row.repeatRunMs ||
             candidate.unrelatedChangeMs < row.unrelatedChangeMs ||
             candidate.rerenderStability > row.rerenderStability ||
-            candidate.implementationScore > row.implementationScore
-          ),
+            candidate.implementationScore > row.implementationScore),
       )
       .map((candidate) => candidate.key);
 

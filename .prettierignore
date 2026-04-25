@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dist-bench/
+coverage/
+tmp_pdf/
+.tmp-pdf/
+diploma/
+demo/src/generated/benchmark-results.json
+*.docx

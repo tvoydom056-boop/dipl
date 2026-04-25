@@ -1,7 +1,11 @@
 import { performance } from "node:perf_hooks";
 
 import { createSelector } from "../packages/kiks/src";
-import { createInitialTaskState, getVisibleTasks, type TaskState } from "../demo/src/shared/taskModel";
+import {
+  createInitialTaskState,
+  getVisibleTasks,
+  type TaskState,
+} from "../demo/src/shared/taskModel";
 import { updateBenchmarkResults } from "./results-store";
 
 const ITERATIONS = 100_000;

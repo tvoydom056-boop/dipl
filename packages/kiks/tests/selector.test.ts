@@ -95,10 +95,7 @@ describe("Selector", () => {
       total: tasks.length,
     }));
     const dependencySelector = createSelector(
-      [
-        (state: TodoState) => state.tasks,
-        (state: TodoState) => state.filter,
-      ] as const,
+      [(state: TodoState) => state.tasks, (state: TodoState) => state.filter] as const,
       projector,
     );
 

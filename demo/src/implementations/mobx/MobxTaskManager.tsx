@@ -39,10 +39,7 @@ class MobxTaskStore {
   }
 
   private commit(updater: (current: TaskState) => TaskState): void {
-    Object.assign(
-      this,
-      pushHistory(this.timeline, this.pointer, updater(this.currentState)),
-    );
+    Object.assign(this, pushHistory(this.timeline, this.pointer, updater(this.currentState)));
   }
 
   public addTask(input: { title: string; description: string; categoryId: string | null }): void {

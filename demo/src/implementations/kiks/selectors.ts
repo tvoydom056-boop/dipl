@@ -56,11 +56,12 @@ export const selectVisibleTasks = createSelector<
 /**
  * Returns summary statistics derived only from the task list.
  */
-export const selectTaskStats = createSelector<TaskState, [Task[]], {
-  total: number;
-  active: number;
-  completed: number;
-}>(
-  [(state) => state.tasks] as const,
-  (tasks) => getTaskStatsFromTasks(tasks),
-);
+export const selectTaskStats = createSelector<
+  TaskState,
+  [Task[]],
+  {
+    total: number;
+    active: number;
+    completed: number;
+  }
+>([(state) => state.tasks] as const, (tasks) => getTaskStatsFromTasks(tasks));

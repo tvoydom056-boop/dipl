@@ -8,20 +8,11 @@ export { useKiks } from "./react/useKiks";
 export { loggerMiddleware } from "./middleware/logger";
 export { thunkMiddleware } from "./middleware/thunk";
 
-export type {
-  HistoryOptions,
-  HistorySnapshot,
-} from "./core/History";
+export type { HistoryOptions, HistorySnapshot } from "./core/History";
 
-export type {
-  Listener,
-  StoreOptions,
-  Unsubscribe,
-} from "./core/Store";
+export type { Listener, StoreOptions, Unsubscribe } from "./core/Store";
 
-export type {
-  ProviderProps,
-} from "./react/Provider";
+export type { ProviderProps } from "./react/Provider";
 
 export type {
   DependencySelectorOptions,
@@ -33,15 +24,6 @@ export type {
   SelectorStrategy,
 } from "./core/Selector";
 
-export type {
-  Dispatch,
-  Middleware,
-  MiddlewareApi,
-  Next,
-} from "./middleware/types";
+export type { Dispatch, Middleware, MiddlewareApi, Next } from "./middleware/types";
 
-export type {
-  Dispatchable,
-  ThunkAction,
-  ThunkDispatch,
-} from "./middleware/thunk";
+export type { Dispatchable, ThunkAction, ThunkDispatch } from "./middleware/thunk";

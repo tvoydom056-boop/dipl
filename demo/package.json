@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "tsc -p tsconfig.json && vite build",
     "bench:dispatch": "tsx benchmarks/dispatch.bench.ts",
     "bench:bundle": "tsx benchmarks/bundle.bench.ts",

@@ -23,5 +23,8 @@ console.table(
 
 const current = readBenchmarkResults();
 console.log(
-  `AHP CR=${current.libraryMath.ahp.cr.toFixed(6)} | TOPSIS winner=${current.libraryMath.topsis.results[0]?.title ?? "n/a"} | Pareto efficient=${current.libraryMath.pareto.filter((row) => row.isEfficient).map((row) => row.title).join(", ")}`,
+  `AHP CR=${current.libraryMath.ahp.cr.toFixed(6)} | TOPSIS winner=${current.libraryMath.topsis.results[0]?.title ?? "n/a"} | Pareto efficient=${current.libraryMath.pareto
+    .filter((row) => row.isEfficient)
+    .map((row) => row.title)
+    .join(", ")}`,
 );

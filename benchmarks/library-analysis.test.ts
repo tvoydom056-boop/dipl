@@ -1,4 +1,4 @@
-import { describe, expect, it } from "../demo/node_modules/vitest/dist/index";
+import { describe, expect, it } from "vitest";
 
 import {
   buildLibraryMath,

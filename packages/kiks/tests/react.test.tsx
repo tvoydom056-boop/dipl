@@ -1,14 +1,7 @@
 // @vitest-environment jsdom
 
 import * as React from "react";
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Action, Provider, Reducer, Store, useKiks } from "../src";

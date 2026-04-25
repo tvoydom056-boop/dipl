@@ -69,18 +69,22 @@ describe("selector benchmark", () => {
   bench("dependency selector cache hit on unrelated changes", () => {
     const selector = createSelector<
       TaskState,
-      [TaskState["tasks"], TaskState["search"], TaskState["filter"], TaskState["sort"], TaskState["selectedCategoryId"]],
+      [
+        TaskState["tasks"],
+        TaskState["search"],
+        TaskState["filter"],
+        TaskState["sort"],
+        TaskState["selectedCategoryId"],
+      ],
       ReturnType<typeof getVisibleTasksFromInputs>
-    >(
-      selectorDependencies,
-      (tasks, search, filter, sort, selectedCategoryId) =>
-        getVisibleTasksFromInputs({
-          tasks,
-          search,
-          filter,
-          sort,
-          selectedCategoryId,
-        }),
+    >(selectorDependencies, (tasks, search, filter, sort, selectedCategoryId) =>
+      getVisibleTasksFromInputs({
+        tasks,
+        search,
+        filter,
+        sort,
+        selectedCategoryId,
+      }),
     );
     selector(baseState);
 
@@ -92,18 +96,22 @@ describe("selector benchmark", () => {
   bench("dependency selector cache miss on related changes", () => {
     const selector = createSelector<
       TaskState,
-      [TaskState["tasks"], TaskState["search"], TaskState["filter"], TaskState["sort"], TaskState["selectedCategoryId"]],
+      [
+        TaskState["tasks"],
+        TaskState["search"],
+        TaskState["filter"],
+        TaskState["sort"],
+        TaskState["selectedCategoryId"],
+      ],
       ReturnType<typeof getVisibleTasksFromInputs>
-    >(
-      selectorDependencies,
-      (tasks, search, filter, sort, selectedCategoryId) =>
-        getVisibleTasksFromInputs({
-          tasks,
-          search,
-          filter,
-          sort,
-          selectedCategoryId,
-        }),
+    >(selectorDependencies, (tasks, search, filter, sort, selectedCategoryId) =>
+      getVisibleTasksFromInputs({
+        tasks,
+        search,
+        filter,
+        sort,
+        selectedCategoryId,
+      }),
     );
 
     for (let index = 0; index < ITERATIONS; index += 1) {

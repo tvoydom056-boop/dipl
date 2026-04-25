@@ -127,11 +127,12 @@ export function MathAnalysisSection() {
       <div className="panel-head">
         <div>
           <p className="eyebrow">Мат анализ</p>
-          <h2>Формулы, Big O и многокритериальный выбор для сравнения библиотек и selector-сценариев</h2>
+          <h2>
+            Формулы, Big O и многокритериальный выбор для сравнения библиотек и selector-сценариев
+          </h2>
         </div>
         <span className="panel-note">
-          Раздел связывает benchmark-данные, методы принятия решений и итоговый выбор для ядра
-          {" "}
+          Раздел связывает benchmark-данные, методы принятия решений и итоговый выбор для ядра{" "}
           `kiks`
         </span>
       </div>
@@ -176,7 +177,9 @@ export function MathAnalysisSection() {
         <article className="math-card math-card--score">
           <div className="math-card-head">
             <strong>Итоговая оценка библиотек по WSM</strong>
-            <span>Нормализация и веса оставлены в исходном виде, как в уже реализованной части проекта</span>
+            <span>
+              Нормализация и веса оставлены в исходном виде, как в уже реализованной части проекта
+            </span>
           </div>
 
           <div className="math-score-table">
@@ -272,11 +275,10 @@ export function MathAnalysisSection() {
           <div className="math-card-head">
             <strong>AHP: матрица попарных сравнений критериев</strong>
             <span>
-              CR:
-              {" "}
-              <strong>{formatNumber(libraryAhpSummary.cr, 4)}</strong>
-              {" "}
-              <span className={`math-status ${libraryAhpSummary.isConsistent ? "is-good" : "is-bad"}`}>
+              CR: <strong>{formatNumber(libraryAhpSummary.cr, 4)}</strong>{" "}
+              <span
+                className={`math-status ${libraryAhpSummary.isConsistent ? "is-good" : "is-bad"}`}
+              >
                 {libraryAhpSummary.isConsistent ? "согласована" : "не согласована"}
               </span>
             </span>
@@ -322,28 +324,26 @@ export function MathAnalysisSection() {
         <article className="math-card">
           <div className="math-card-head">
             <strong>Pareto: доминирование библиотек</strong>
-            <span>Парето-оптимальное множество: {libraryParetoFrontier.map((row) => row.title).join(", ")}</span>
+            <span>
+              Парето-оптимальное множество:{" "}
+              {libraryParetoFrontier.map((row) => row.title).join(", ")}
+            </span>
           </div>
 
           <div className="math-pareto-list">
             {libraryParetoRows.map((row) => (
-              <div className={`math-pareto-item ${row.isEfficient ? "is-efficient" : ""}`} key={row.key}>
+              <div
+                className={`math-pareto-item ${row.isEfficient ? "is-efficient" : ""}`}
+                key={row.key}
+              >
                 <div className="math-pareto-top">
                   <strong>{row.title}</strong>
                   <span className={`math-status ${row.isEfficient ? "is-good" : "is-muted"}`}>
                     {row.isEfficient ? "Pareto-optimal" : "Dominated"}
                   </span>
                 </div>
-                <span>
-                  Доминирует:
-                  {" "}
-                  {row.dominatesLabels.join(", ") || "никого"}
-                </span>
-                <span>
-                  Доминируется:
-                  {" "}
-                  {row.dominatedByLabels.join(", ") || "никем"}
-                </span>
+                <span>Доминирует: {row.dominatesLabels.join(", ") || "никого"}</span>
+                <span>Доминируется: {row.dominatedByLabels.join(", ") || "никем"}</span>
               </div>
             ))}
           </div>
@@ -410,7 +410,11 @@ export function MathAnalysisSection() {
 
             {libraryTopsisRows.map((row) => (
               <div
-                className={["math-score-row", "math-score-row--compact", row.isWinner ? "is-winner is-kiks" : ""]
+                className={[
+                  "math-score-row",
+                  "math-score-row--compact",
+                  row.isWinner ? "is-winner is-kiks" : "",
+                ]
                   .filter(Boolean)
                   .join(" ")}
                 key={row.key}
@@ -450,9 +454,7 @@ export function MathAnalysisSection() {
                 <strong>{row.title}</strong>
                 {row.scenarios.map((scenario) => (
                   <span key={`${row.key}-${scenario.key}`}>
-                    #{scenario.rank}
-                    {" "}
-                    ({formatNumber(scenario.score, 2)})
+                    #{scenario.rank} ({formatNumber(scenario.score, 2)})
                   </span>
                 ))}
               </div>
@@ -465,7 +467,9 @@ export function MathAnalysisSection() {
                 <span>{scenario.title}</span>
                 <strong>{scenario.winner}</strong>
                 <small>
-                  {scenario.weights.map((entry) => `${entry.label} ${formatNumber(entry.value, 2)}`).join(" • ")}
+                  {scenario.weights
+                    .map((entry) => `${entry.label} ${formatNumber(entry.value, 2)}`)
+                    .join(" • ")}
                 </small>
               </div>
             ))}
@@ -476,7 +480,8 @@ export function MathAnalysisSection() {
           <div className="math-card-head">
             <strong>Selector benchmark: cache hit vs miss</strong>
             <span>
-              {selectorBenchmarkSummary.iterations} итераций × {selectorBenchmarkSummary.runs} прогона
+              {selectorBenchmarkSummary.iterations} итераций × {selectorBenchmarkSummary.runs}{" "}
+              прогона
             </span>
           </div>
 
@@ -511,7 +516,9 @@ export function MathAnalysisSection() {
         <article className="math-card">
           <div className="math-card-head">
             <strong>Четыре реализации Selector</strong>
-            <span>Эксперимент на одинаковых сценариях фильтрации, поиска и стабильности snapshot</span>
+            <span>
+              Эксперимент на одинаковых сценариях фильтрации, поиска и стабильности snapshot
+            </span>
           </div>
 
           <div className="complexity-table">
@@ -533,7 +540,8 @@ export function MathAnalysisSection() {
                   {formatNumber(row.firstRunMs, 4)} ms / {formatNumber(row.repeatRunMs, 4)} ms
                 </span>
                 <span>
-                  {formatNumber(row.unrelatedChangeMs, 4)} ms • stable snapshot {formatNumber(row.rerenderStability * 100, 1)}%
+                  {formatNumber(row.unrelatedChangeMs, 4)} ms • stable snapshot{" "}
+                  {formatNumber(row.rerenderStability * 100, 1)}%
                 </span>
               </div>
             ))}
@@ -553,9 +561,10 @@ export function MathAnalysisSection() {
           <div className="math-card-head">
             <strong>Итог выбора через 4 метода</strong>
             <span>
-              Победитель:
-              {" "}
-              <strong>{selectorStrategyRows.find((row) => row.key === selectorWinner)?.title}</strong>
+              Победитель:{" "}
+              <strong>
+                {selectorStrategyRows.find((row) => row.key === selectorWinner)?.title}
+              </strong>
             </span>
           </div>
 
@@ -570,7 +579,11 @@ export function MathAnalysisSection() {
 
             {selectorDecisionRows.map((row) => (
               <div
-                className={["math-score-row", "math-score-row--selector", row.isWinner ? "is-winner is-kiks" : ""]
+                className={[
+                  "math-score-row",
+                  "math-score-row--selector",
+                  row.isWinner ? "is-winner is-kiks" : "",
+                ]
                   .filter(Boolean)
                   .join(" ")}
                 key={row.key}

@@ -101,7 +101,8 @@ function benchmarkRedux(): BenchResult {
             task.id === currentTask.id
               ? {
                   ...task,
-                  status: task.status === "completed" ? ("active" as const) : ("completed" as const),
+                  status:
+                    task.status === "completed" ? ("active" as const) : ("completed" as const),
                 }
               : task,
           ),
@@ -148,7 +149,8 @@ function benchmarkZustand(): BenchResult {
             task.id === currentTask.id
               ? {
                   ...task,
-                  status: task.status === "completed" ? ("active" as const) : ("completed" as const),
+                  status:
+                    task.status === "completed" ? ("active" as const) : ("completed" as const),
                 }
               : task,
           ),
@@ -219,7 +221,9 @@ updateBenchmarkResults((current) => ({
   },
 }));
 
-const sortedResults = Object.values(benchmarkMap).sort((left, right) => right.opsPerSec - left.opsPerSec);
+const sortedResults = Object.values(benchmarkMap).sort(
+  (left, right) => right.opsPerSec - left.opsPerSec,
+);
 
 console.log(`Dispatch benchmark, ${ITERATIONS} iterations x ${RUNS} runs`);
 for (const result of sortedResults) {

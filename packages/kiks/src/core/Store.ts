@@ -7,11 +7,7 @@ import {
   type MemoizedSelector,
   type Selector,
 } from "./Selector";
-import type {
-  Dispatch,
-  Middleware,
-  MiddlewareApi,
-} from "../middleware/types";
+import type { Dispatch, Middleware, MiddlewareApi } from "../middleware/types";
 
 /**
  * Подписчик, вызываемый после изменения состояния.
@@ -37,10 +33,7 @@ export interface StoreOptions<TState, TAction extends Action> {
  * Ядро библиотеки kiks.
  * Хранит состояние, управляет подписками и централизует обработку экшенов.
  */
-export class Store<
-  TState,
-  TAction extends Action = Action,
-> {
+export class Store<TState, TAction extends Action = Action> {
   private state: TState;
   private reducers: Reducer<TState, TAction>[];
   private readonly history: History<TState>;
@@ -55,9 +48,7 @@ export class Store<
 
   public constructor(options: StoreOptions<TState, TAction>) {
     this.state = options.initialState;
-    this.reducers = Array.isArray(options.reducer)
-      ? [...options.reducer]
-      : [options.reducer];
+    this.reducers = Array.isArray(options.reducer) ? [...options.reducer] : [options.reducer];
     this.history = new History<TState>({
       initialState: options.initialState,
       limit: options.historyLimit,
@@ -106,7 +97,9 @@ export class Store<
    * Returns true when the selector reference is already known to the store cache.
    */
   public hasSelector<TResult>(selector: Selector<TState, TResult>): boolean {
-    return isMemoizedSelector(selector) || this.selectorCache.has(selector as Selector<TState, unknown>);
+    return (
+      isMemoizedSelector(selector) || this.selectorCache.has(selector as Selector<TState, unknown>)
+    );
   }
 
   /**

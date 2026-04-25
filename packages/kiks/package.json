@@ -2,6 +2,25 @@
   "name": "kiks",
   "version": "0.1.0",
   "description": "Lightweight state management library for React applications",
+  "license": "MIT",
+  "author": "DPiunov",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tvoydom056-boop/dipl.git",
+    "directory": "packages/kiks"
+  },
+  "bugs": {
+    "url": "https://github.com/tvoydom056-boop/dipl/issues"
+  },
+  "homepage": "https://github.com/tvoydom056-boop/dipl/tree/prod/packages/kiks#readme",
+  "keywords": [
+    "react",
+    "state-management",
+    "typescript",
+    "selectors",
+    "middleware",
+    "history"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -30,7 +49,9 @@
   ],
   "scripts": {
     "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "size": "npm run build && node ./scripts/size-report.mjs",
+    "prepublishOnly": "npm test && npm run build",
     "test": "vitest run"
   },
   "devDependencies": {

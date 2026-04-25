@@ -152,7 +152,11 @@ export const weightedCriteria = {
   builtInFeatures: 0.25,
 } as const;
 
-function calculateRerenderScore(totalChangedComponents: number, maxValue: number, minValue: number): number {
+function calculateRerenderScore(
+  totalChangedComponents: number,
+  maxValue: number,
+  minValue: number,
+): number {
   if (maxValue === minValue) {
     return 100;
   }
@@ -256,7 +260,9 @@ export const comparisonMetricRows: ComparisonMetricRow[] = implementationOrder.m
   const bundleEntry = results.bundle.results[key];
   const rerenderEntry = results.rerender.results[key];
   const allChangedZones = rerenderEntry
-    ? results.rerender.scenarios.flatMap((scenario) => rerenderEntry.scenarios[scenario].changedZones)
+    ? results.rerender.scenarios.flatMap(
+        (scenario) => rerenderEntry.scenarios[scenario].changedZones,
+      )
     : [];
 
   return {
@@ -323,12 +329,8 @@ const minBundleSize = Math.min(
 const maxDispatchSpeed = Math.max(
   ...implementationOrder.map((key) => results.dispatch.results[key]?.opsPerSec ?? 0),
 );
-const minDependencyCount = Math.min(
-  ...implementationOrder.map((key) => dependencyCounts[key]),
-);
-const maxFeatureScore = Math.max(
-  ...implementationOrder.map((key) => builtInFeatureScores[key]),
-);
+const minDependencyCount = Math.min(...implementationOrder.map((key) => dependencyCounts[key]));
+const maxFeatureScore = Math.max(...implementationOrder.map((key) => builtInFeatureScores[key]));
 
 export const weightedScoreRows: WeightedScoreRow[] = implementationOrder
   .map((key) => {
@@ -340,14 +342,8 @@ export const weightedScoreRows: WeightedScoreRow[] = implementationOrder
       results.dispatch.results[key]?.opsPerSec ?? 0,
       maxDispatchSpeed,
     );
-    const dependencyScore = normalizeLowerBetter(
-      dependencyCounts[key] + 1,
-      minDependencyCount + 1,
-    );
-    const featureScore = normalizeHigherBetter(
-      builtInFeatureScores[key],
-      maxFeatureScore,
-    );
+    const dependencyScore = normalizeLowerBetter(dependencyCounts[key] + 1, minDependencyCount + 1);
+    const featureScore = normalizeHigherBetter(builtInFeatureScores[key], maxFeatureScore);
 
     const weightedTotal = Number(
       (
@@ -433,16 +429,18 @@ export const librarySensitivityRows = implementationOrder.map((key) => ({
   }),
 }));
 
-export const librarySensitivityScenarios = results.libraryMath.sensitivity.scenarios.map((scenario) => ({
-  key: scenario.key,
-  title: scenario.title,
-  winner: implementationMeta[scenario.winner].title,
-  weights: libraryCriterionOrder.map((criterion) => ({
-    criterion,
-    label: formatCriterionName(criterion),
-    value: scenario.weights[criterion],
-  })),
-}));
+export const librarySensitivityScenarios = results.libraryMath.sensitivity.scenarios.map(
+  (scenario) => ({
+    key: scenario.key,
+    title: scenario.title,
+    winner: implementationMeta[scenario.winner].title,
+    weights: libraryCriterionOrder.map((criterion) => ({
+      criterion,
+      label: formatCriterionName(criterion),
+      value: scenario.weights[criterion],
+    })),
+  }),
+);
 
 export const librarySensitivitySummary = {
   stableWinner: results.libraryMath.sensitivity.stableWinner,

@@ -2,15 +2,10 @@
   "extends": "../demo/tsconfig.json",
   "compilerOptions": {
     "baseUrl": "..",
-    "ignoreDeprecations": "6.0",
     "types": ["node"],
-    "typeRoots": ["../demo/node_modules/@types"],
     "lib": ["ES2020", "DOM"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "paths": {
-      "vitest": ["./demo/node_modules/vitest/dist/index.d.ts"]
-    },
     "noEmit": true
   },
   "include": ["./*.ts", "./*.tsx", "./*.d.ts"]

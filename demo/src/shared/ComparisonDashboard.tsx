@@ -65,17 +65,9 @@ function getBundleScore(bundle: number): number {
   return ((maxBundle - bundle) / (maxBundle - minBundle)) * 100;
 }
 
-function CapabilityBadge({
-  value,
-  positive,
-}: {
-  value: string;
-  positive: boolean;
-}) {
+function CapabilityBadge({ value, positive }: { value: string; positive: boolean }) {
   return (
-    <span className={positive ? "capability-badge is-positive" : "capability-badge"}>
-      {value}
-    </span>
+    <span className={positive ? "capability-badge is-positive" : "capability-badge"}>{value}</span>
   );
 }
 
@@ -149,11 +141,7 @@ function CapabilityVisualCard({
             </div>
             <div className="capability-visual-track">
               <div
-                className={[
-                  "capability-visual-fill",
-                  item.key,
-                  `is-${item.emphasis}`,
-                ].join(" ")}
+                className={["capability-visual-fill", item.key, `is-${item.emphasis}`].join(" ")}
               />
             </div>
           </div>
@@ -440,14 +428,18 @@ export function ComparisonDashboard({
       {viewMode === "lines" ? (
         <div className="scope-toggle">
           <button
-            className={scopeMode === "all" ? "scope-toggle-button is-active" : "scope-toggle-button"}
+            className={
+              scopeMode === "all" ? "scope-toggle-button is-active" : "scope-toggle-button"
+            }
             onClick={() => setScopeMode("all")}
             type="button"
           >
             Показать все библиотеки
           </button>
           <button
-            className={scopeMode === "active" ? "scope-toggle-button is-active" : "scope-toggle-button"}
+            className={
+              scopeMode === "active" ? "scope-toggle-button is-active" : "scope-toggle-button"
+            }
             onClick={() => setScopeMode("active")}
             type="button"
           >
@@ -473,10 +465,7 @@ export function ComparisonDashboard({
 
                 return (
                   <div
-                    className={[
-                      "metric-row",
-                      row.key === activeImplementation ? "is-active" : "",
-                    ]
+                    className={["metric-row", row.key === activeImplementation ? "is-active" : ""]
                       .filter(Boolean)
                       .join(" ")}
                     key={`dispatch-${row.key}`}
@@ -486,7 +475,10 @@ export function ComparisonDashboard({
                       <span>{formatNumber(row.dispatchOps)} ops/sec</span>
                     </div>
                     <div className="metric-bar-track">
-                      <div className={`metric-bar-fill ${row.colorClass}`} style={{ width: `${width}%` }} />
+                      <div
+                        className={`metric-bar-fill ${row.colorClass}`}
+                        style={{ width: `${width}%` }}
+                      />
                     </div>
                   </div>
                 );
@@ -509,10 +501,7 @@ export function ComparisonDashboard({
 
                 return (
                   <div
-                    className={[
-                      "metric-row",
-                      row.key === activeImplementation ? "is-active" : "",
-                    ]
+                    className={["metric-row", row.key === activeImplementation ? "is-active" : ""]
                       .filter(Boolean)
                       .join(" ")}
                     key={`bundle-${row.key}`}
@@ -522,7 +511,10 @@ export function ComparisonDashboard({
                       <span>{formatNumber(row.bundleGzipKb)} kB gzip</span>
                     </div>
                     <div className="metric-bar-track">
-                      <div className={`metric-bar-fill ${row.colorClass}`} style={{ width: `${width}%` }} />
+                      <div
+                        className={`metric-bar-fill ${row.colorClass}`}
+                        style={{ width: `${width}%` }}
+                      />
                     </div>
                   </div>
                 );
@@ -544,10 +536,7 @@ export function ComparisonDashboard({
             <div className="metric-chart">
               {metricRows.map((row) => (
                 <div
-                  className={[
-                    "metric-row",
-                    row.key === activeImplementation ? "is-active" : "",
-                  ]
+                  className={["metric-row", row.key === activeImplementation ? "is-active" : ""]
                     .filter(Boolean)
                     .join(" ")}
                   key={`rerender-${row.key}`}
@@ -657,10 +646,30 @@ export function ComparisonDashboard({
             activeImplementation={activeImplementation}
             kind="history"
             items={[
-              { key: "kiks", title: "kiks", status: "Встроенный API undo / redo / timeTravel", emphasis: "strong" },
-              { key: "redux", title: "Redux Toolkit", status: "Обычно через внешний DevTools-поток", emphasis: "medium" },
-              { key: "zustand", title: "Zustand", status: "Реализуется как кастомное расширение store", emphasis: "medium" },
-              { key: "mobx", title: "MobX", status: "Требует отдельной ручной модели истории", emphasis: "weak" },
+              {
+                key: "kiks",
+                title: "kiks",
+                status: "Встроенный API undo / redo / timeTravel",
+                emphasis: "strong",
+              },
+              {
+                key: "redux",
+                title: "Redux Toolkit",
+                status: "Обычно через внешний DevTools-поток",
+                emphasis: "medium",
+              },
+              {
+                key: "zustand",
+                title: "Zustand",
+                status: "Реализуется как кастомное расширение store",
+                emphasis: "medium",
+              },
+              {
+                key: "mobx",
+                title: "MobX",
+                status: "Требует отдельной ручной модели истории",
+                emphasis: "weak",
+              },
             ]}
             subtitle="Насколько нативно библиотека поддерживает историю состояний"
             title="Time-travel"
@@ -670,10 +679,30 @@ export function ComparisonDashboard({
             activeImplementation={activeImplementation}
             kind="selectors"
             items={[
-              { key: "kiks", title: "kiks", status: "Встроенные memoized selectors", emphasis: "strong" },
-              { key: "redux", title: "Redux Toolkit", status: "Часто через внешние selector-паттерны", emphasis: "medium" },
-              { key: "zustand", title: "Zustand", status: "Частично через выборки и пользовательские memo-patterns", emphasis: "medium" },
-              { key: "mobx", title: "MobX", status: "Ставка на реактивность, а не на selector API", emphasis: "weak" },
+              {
+                key: "kiks",
+                title: "kiks",
+                status: "Встроенные memoized selectors",
+                emphasis: "strong",
+              },
+              {
+                key: "redux",
+                title: "Redux Toolkit",
+                status: "Часто через внешние selector-паттерны",
+                emphasis: "medium",
+              },
+              {
+                key: "zustand",
+                title: "Zustand",
+                status: "Частично через выборки и пользовательские memo-patterns",
+                emphasis: "medium",
+              },
+              {
+                key: "mobx",
+                title: "MobX",
+                status: "Ставка на реактивность, а не на selector API",
+                emphasis: "weak",
+              },
             ]}
             subtitle="Насколько явно библиотека поддерживает слой производных данных"
             title="Селекторы"

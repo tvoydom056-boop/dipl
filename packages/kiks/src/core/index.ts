@@ -4,10 +4,7 @@ export { Reducer } from "./Reducer";
 export { createSelector, isMemoizedSelector } from "./Selector";
 export { Store } from "./Store";
 
-export type {
-  HistoryOptions,
-  HistorySnapshot,
-} from "./History";
+export type { HistoryOptions, HistorySnapshot } from "./History";
 
 export type {
   DependencySelectorOptions,
@@ -19,8 +16,4 @@ export type {
   SelectorStrategy,
 } from "./Selector";
 
-export type {
-  Listener,
-  StoreOptions,
-  Unsubscribe,
-} from "./Store";
+export type { Listener, StoreOptions, Unsubscribe } from "./Store";

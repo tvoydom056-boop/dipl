@@ -1,9 +1,4 @@
-import {
-  type ProfilerOnRenderCallback,
-  type ReactElement,
-  Profiler,
-  act,
-} from "react";
+import { type ProfilerOnRenderCallback, type ReactElement, Profiler, act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { Provider, useSelector } from "react-redux";
 import { observer } from "mobx-react-lite";
@@ -16,9 +11,7 @@ import {
   selectVisibleTasks,
 } from "../src/implementations/kiks/selectors";
 import { useKiksLocal } from "../src/implementations/kiks/useKiksLocal";
-import {
-  kiksBenchmarkApi,
-} from "../src/implementations/kiks/KiksTaskManager";
+import { kiksBenchmarkApi } from "../src/implementations/kiks/KiksTaskManager";
 import {
   reduxBenchmarkApi,
   reduxStore,
@@ -28,17 +21,9 @@ import {
   zustandBenchmarkApi,
   useZustandTaskStore,
 } from "../src/implementations/zustand/ZustandTaskManager";
-import {
-  mobxBenchmarkApi,
-  mobxTaskStore,
-} from "../src/implementations/mobx/MobxTaskManager";
+import { mobxBenchmarkApi, mobxTaskStore } from "../src/implementations/mobx/MobxTaskManager";
 import { trackRender } from "../src/shared/renderTracker";
-import {
-  getRootCategories,
-  getTaskStats,
-  getVisibleTasks,
-  type TaskState,
-} from "../src/shared/taskModel";
+import { getRootCategories, getTaskStats, getVisibleTasks } from "../src/shared/taskModel";
 import {
   implementationOrder,
   rerenderScenarioOrder,
@@ -90,12 +75,7 @@ function KiksSummaryZone() {
   const filter = useKiksLocal(taskStore, (state) => state.filter);
   const sort = useKiksLocal(taskStore, (state) => state.sort);
   const selectedCategoryId = useKiksLocal(taskStore, (state) => state.selectedCategoryId);
-  return (
-    <SnapshotZone
-      values={[search, filter, sort, selectedCategoryId]}
-      zone="summary-zone"
-    />
-  );
+  return <SnapshotZone values={[search, filter, sort, selectedCategoryId]} zone="summary-zone" />;
 }
 
 function KiksStatsZone() {
@@ -142,7 +122,11 @@ function KiksListZone() {
       <span>{tasks.length}</span>
       {tasks.map((task) => {
         trackRender(`list-item:${task.id}`);
-        return <span key={task.id}>{task.id}:{task.status}</span>;
+        return (
+          <span key={task.id}>
+            {task.id}:{task.status}
+          </span>
+        );
       })}
     </div>
   );
@@ -242,7 +226,11 @@ function ReduxListZone() {
       <span>{tasks.length}</span>
       {tasks.map((task) => {
         trackRender(`list-item:${task.id}`);
-        return <span key={task.id}>{task.id}:{task.status}</span>;
+        return (
+          <span key={task.id}>
+            {task.id}:{task.status}
+          </span>
+        );
       })}
     </div>
   );
@@ -260,7 +248,11 @@ function ReduxHistoryZone() {
       <span>{pointer}</span>
       {timeline.map((snapshot, index) => {
         trackRender(`history-item:${index}`);
-        return <span key={index}>{index}:{snapshot.tasks.length}</span>;
+        return (
+          <span key={index}>
+            {index}:{snapshot.tasks.length}
+          </span>
+        );
       })}
     </div>
   );
@@ -341,7 +333,11 @@ function ZustandListZone() {
       <span>{tasks.length}</span>
       {tasks.map((task) => {
         trackRender(`list-item:${task.id}`);
-        return <span key={task.id}>{task.id}:{task.status}</span>;
+        return (
+          <span key={task.id}>
+            {task.id}:{task.status}
+          </span>
+        );
       })}
     </div>
   );
@@ -359,7 +355,11 @@ function ZustandHistoryZone() {
       <span>{pointer}</span>
       {timeline.map((snapshot, index) => {
         trackRender(`history-item:${index}`);
-        return <span key={index}>{index}:{snapshot.tasks.length}</span>;
+        return (
+          <span key={index}>
+            {index}:{snapshot.tasks.length}
+          </span>
+        );
       })}
     </div>
   );
@@ -443,7 +443,11 @@ const MobxListZone = observer(function MobxListZone() {
       <span>{tasks.length}</span>
       {tasks.map((task) => {
         trackRender(`list-item:${task.id}`);
-        return <span key={task.id}>{task.id}:{task.status}</span>;
+        return (
+          <span key={task.id}>
+            {task.id}:{task.status}
+          </span>
+        );
       })}
     </div>
   );
@@ -461,7 +465,11 @@ const MobxHistoryZone = observer(function MobxHistoryZone() {
       <span>{pointer}</span>
       {history.map((snapshot) => {
         trackRender(`history-item:${snapshot.index}`);
-        return <span key={snapshot.index}>{snapshot.index}:{snapshot.state.tasks.length}</span>;
+        return (
+          <span key={snapshot.index}>
+            {snapshot.index}:{snapshot.state.tasks.length}
+          </span>
+        );
       })}
     </div>
   );

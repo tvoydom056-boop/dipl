@@ -1,7 +1,4 @@
-import {
-  createContext,
-  type ReactNode,
-} from "react";
+import { createContext, type ReactNode } from "react";
 
 import type { Action } from "../core/Action";
 import type { Store } from "../core/Store";
@@ -29,8 +26,6 @@ export function Provider<TState, TAction extends Action>({
   children,
 }: ProviderProps<TState, TAction>) {
   return (
-    <KiksContext.Provider value={store as unknown as AnyStore}>
-      {children}
-    </KiksContext.Provider>
+    <KiksContext.Provider value={store as unknown as AnyStore}>{children}</KiksContext.Provider>
   );
 }

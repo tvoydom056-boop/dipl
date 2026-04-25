@@ -1,10 +1,6 @@
 import { TaskManagerView } from "../../shared/TaskManagerView";
 import { taskActions } from "./actions";
-import {
-  selectRootCategories,
-  selectTaskStats,
-  selectVisibleTasks,
-} from "./selectors";
+import { selectRootCategories, selectTaskStats, selectVisibleTasks } from "./selectors";
 import { taskStore } from "./store";
 import { useKiksLocal } from "./useKiksLocal";
 

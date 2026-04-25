@@ -217,12 +217,7 @@ export interface BenchmarkResults {
   };
 }
 
-export const implementationOrder: ImplementationKey[] = [
-  "kiks",
-  "redux",
-  "zustand",
-  "mobx",
-];
+export const implementationOrder: ImplementationKey[] = ["kiks", "redux", "zustand", "mobx"];
 
 export const libraryCriterionOrder: LibraryCriterionKey[] = [
   "bundleSize",

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "../packages/kiks/node_modules/@testing-library/react";
+import { render, screen } from "@testing-library/react";
 
 import { createEmptyBenchmarkResults } from "../demo/src/shared/benchmarkModel";
 
@@ -63,8 +63,9 @@ vi.mock("../demo/src/shared/benchmarkResults", () => {
 describe("MathAnalysisSection", () => {
   it("renders safely with empty benchmark results", async () => {
     const module = await import("../demo/src/shared/MathAnalysisSection");
+    const MathAnalysisSection = module.MathAnalysisSection;
 
-    render(module.MathAnalysisSection({}));
+    render(<MathAnalysisSection />);
 
     expect(screen.getByText(/данные ещё не сгенерированы/i)).toBeTruthy();
     expect(screen.getByText(/AHP:/i)).toBeTruthy();

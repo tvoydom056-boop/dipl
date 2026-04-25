@@ -24,7 +24,9 @@ export default defineConfig({
       },
       {
         find: /^kiks\/middleware$/,
-        replacement: fileURLToPath(new URL("../packages/kiks/src/middleware/index.ts", import.meta.url)),
+        replacement: fileURLToPath(
+          new URL("../packages/kiks/src/middleware/index.ts", import.meta.url),
+        ),
       },
       {
         find: /^kiks$/,

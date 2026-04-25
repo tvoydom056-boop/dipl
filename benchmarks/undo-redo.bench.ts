@@ -1,10 +1,7 @@
 import { bench, describe } from "../demo/node_modules/vitest/dist/index";
 
 import { Action, Reducer, Store } from "../packages/kiks/src";
-import {
-  createInitialTaskState,
-  type TaskState,
-} from "../demo/src/shared/taskModel";
+import { createInitialTaskState, type TaskState } from "../demo/src/shared/taskModel";
 
 const PREPARED_HISTORY_LENGTH = 1_100;
 

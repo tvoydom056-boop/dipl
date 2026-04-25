@@ -1,5 +1,4 @@
 import type { Action } from "../core/Action";
-import type { Dispatch } from "./types";
 import type { Middleware } from "./types";
 
 /**
@@ -20,17 +19,12 @@ export type ThunkDispatch<TState, TAction extends Action> = (
 /**
  * Объединённый тип стандартного экшена и thunk-функции.
  */
-export type Dispatchable<TState, TAction extends Action> =
-  | TAction
-  | ThunkAction<TState, TAction>;
+export type Dispatchable<TState, TAction extends Action> = TAction | ThunkAction<TState, TAction>;
 
 /**
  * Встроенный middleware для поддержки асинхронных операций.
  */
-export function thunkMiddleware<
-  TState,
-  TAction extends Action,
->(): Middleware<TState, TAction> {
+export function thunkMiddleware<TState, TAction extends Action>(): Middleware<TState, TAction> {
   return ({ dispatch, getState }) =>
     (next) =>
     (action) => {

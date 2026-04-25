@@ -33,11 +33,7 @@ function updateTimelineState(
   state: Pick<ZustandTaskStore, "timeline" | "pointer">,
   updater: (current: TaskState) => TaskState,
 ): Pick<ZustandTaskStore, "timeline" | "pointer"> {
-  return pushHistory(
-    state.timeline,
-    state.pointer,
-    updater(state.timeline[state.pointer]),
-  );
+  return pushHistory(state.timeline, state.pointer, updater(state.timeline[state.pointer]));
 }
 
 export const useZustandTaskStore = create<ZustandTaskStore>((set) => ({
@@ -86,7 +82,7 @@ export const useZustandTaskStore = create<ZustandTaskStore>((set) => ({
       const next = {
         ...current,
         tasks: current.tasks.map((task) =>
-              task.id === id
+          task.id === id
             ? {
                 ...task,
                 status: task.status === "completed" ? ("active" as const) : ("completed" as const),
@@ -155,7 +151,8 @@ export const zustandBenchmarkApi = {
     });
   },
   toggleTask() {
-    const firstTaskId = useZustandTaskStore.getState().timeline[useZustandTaskStore.getState().pointer].tasks[0]?.id;
+    const firstTaskId =
+      useZustandTaskStore.getState().timeline[useZustandTaskStore.getState().pointer].tasks[0]?.id;
     if (firstTaskId) {
       useZustandTaskStore.getState().toggleTask(firstTaskId);
     }

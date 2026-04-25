@@ -239,12 +239,12 @@ export function App() {
                 типизация, селекторы и собственный pipeline middleware.
               </li>
               <li>
-                <strong>Zustand</strong> демонстрирует минималистичный подход и высокую скорость
-                в текущем benchmark-сценарии.
+                <strong>Zustand</strong> демонстрирует минималистичный подход и высокую скорость в
+                текущем benchmark-сценарии.
               </li>
               <li>
-                <strong>Redux Toolkit</strong> хорошо показывает стандартизированную архитектуру,
-                но требует большей инфраструктуры.
+                <strong>Redux Toolkit</strong> хорошо показывает стандартизированную архитектуру, но
+                требует большей инфраструктуры.
               </li>
               <li>
                 <strong>MobX</strong> иллюстрирует реактивную модель и отличается по философии
@@ -276,9 +276,8 @@ export function App() {
               <div className="rerender-card">
                 <strong>Как измеряется</strong>
                 <p>
-                  Скрипт монтирует каждую реализацию в jsdom, выполняет add task, toggle task,
-                  set search и undo, а затем сохраняет commits и число реально перерисованных
-                  UI-зон.
+                  Скрипт монтирует каждую реализацию в jsdom, выполняет add task, toggle task, set
+                  search и undo, а затем сохраняет commits и число реально перерисованных UI-зон.
                 </p>
               </div>
 
@@ -321,8 +320,8 @@ export function App() {
               <div className="rerender-results-head">
                 <strong>Breakdown по зонам интерфейса</strong>
                 <span>
-                  Отдельно видно, как часто затрагиваются `list`, `history`, `filters`, `stats`
-                  и другие зоны
+                  Отдельно видно, как часто затрагиваются `list`, `history`, `filters`, `stats` и
+                  другие зоны
                 </span>
               </div>
 
@@ -341,7 +340,10 @@ export function App() {
 
                     <div className="rerender-breakdown-list">
                       {row.scenarios.map((scenarioRow) => (
-                        <div className="rerender-breakdown-row" key={`${row.library}-${scenarioRow.scenario}`}>
+                        <div
+                          className="rerender-breakdown-row"
+                          key={`${row.library}-${scenarioRow.scenario}`}
+                        >
                           <strong>{scenarioRow.scenario}</strong>
                           <span>{scenarioRow.changedComponents} зон</span>
                           <small>{scenarioRow.zoneSummary}</small>
@@ -427,16 +429,16 @@ export function App() {
                   <strong>{step.title}</strong>
                   <p>{step.description}</p>
                 </div>
-                {index < architectureSteps.length - 1 ? <div className="architecture-arrow">→</div> : null}
+                {index < architectureSteps.length - 1 ? (
+                  <div className="architecture-arrow">→</div>
+                ) : null}
               </div>
             ))}
           </div>
         </section>
       </header>
 
-      <section id="live-demo">
-        {activeInfo.component}
-      </section>
+      <section id="live-demo">{activeInfo.component}</section>
     </div>
   );
 }

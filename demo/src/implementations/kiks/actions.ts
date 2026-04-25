@@ -1,11 +1,6 @@
 import { Action } from "../../../../packages/kiks/src";
 
-import type {
-  Category,
-  FilterMode,
-  SortMode,
-  Task,
-} from "./types";
+import type { Category, FilterMode, SortMode, Task } from "./types";
 
 /**
  * Полезные нагрузки экшенов demo-приложения.

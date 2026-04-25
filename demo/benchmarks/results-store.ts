@@ -1,10 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
-import {
-  createEmptyBenchmarkResults,
-  type BenchmarkResults,
-} from "../src/shared/benchmarkModel";
+import { createEmptyBenchmarkResults, type BenchmarkResults } from "../src/shared/benchmarkModel";
 
 const resultsPath = resolve(process.cwd(), "src", "generated", "benchmark-results.json");
 

@@ -20,27 +20,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
-      - name: Install kiks dependencies
+      - name: Install dependencies
         run: npm ci
-        working-directory: packages/kiks
 
-      - name: Install demo dependencies
-        run: npm ci
-        working-directory: demo
+      - name: Check formatting
+        run: npm run format:check
 
-      - name: Test package
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
         run: npm test
-        working-directory: packages/kiks
 
-      - name: Test benchmark analytics
-        run: npm run test:benchmarks
-        working-directory: demo
-
-      - name: Build package
+      - name: Build
         run: npm run build
-        working-directory: packages/kiks
-
-      - name: Build demo
-        run: npm run build
-        working-directory: demo

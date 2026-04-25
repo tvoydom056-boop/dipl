@@ -10,10 +10,7 @@ import { create } from "../demo/node_modules/zustand";
 
 import { Action, Reducer, Store } from "../packages/kiks/src";
 import { pushHistory } from "../demo/src/shared/historyHelpers";
-import {
-  createInitialTaskState,
-  type TaskState,
-} from "../demo/src/shared/taskModel";
+import { createInitialTaskState, type TaskState } from "../demo/src/shared/taskModel";
 
 const ITERATIONS = 100_000;
 
@@ -132,7 +129,10 @@ describe("dispatch benchmark", () => {
 
       public increment(index: number): void {
         const current = this.timeline[this.pointer];
-        Object.assign(this, pushHistory(this.timeline, this.pointer, createNextTaskState(current, index)));
+        Object.assign(
+          this,
+          pushHistory(this.timeline, this.pointer, createNextTaskState(current, index)),
+        );
       }
     }
 

@@ -82,11 +82,12 @@ describe("History", () => {
     store.dispatch(new CounterAction("increment", 1));
     store.dispatch(new CounterAction("increment", 1));
 
-    expect(store.getHistory().getSnapshots().map((item) => item.state)).toEqual([
-      { value: 1 },
-      { value: 2 },
-      { value: 3 },
-    ]);
+    expect(
+      store
+        .getHistory()
+        .getSnapshots()
+        .map((item) => item.state),
+    ).toEqual([{ value: 1 }, { value: 2 }, { value: 3 }]);
     expect(store.getHistory().getCurrentIndex()).toBe(2);
   });
 });

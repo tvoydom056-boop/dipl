@@ -1,8 +1,4 @@
-import {
-  configureStore,
-  createSlice,
-  type PayloadAction,
-} from "@reduxjs/toolkit";
+import { configureStore, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { Provider, useDispatch, useSelector } from "react-redux";
 
 import { pushHistory } from "../../shared/historyHelpers";
@@ -23,10 +19,7 @@ export interface ReduxRootState {
   pointer: number;
 }
 
-function commitState(
-  state: ReduxRootState,
-  updater: (current: TaskState) => TaskState,
-): void {
+function commitState(state: ReduxRootState, updater: (current: TaskState) => TaskState): void {
   const current = state.timeline[state.pointer];
   const next = updater(current);
   Object.assign(state, pushHistory(state.timeline, state.pointer, next));
@@ -39,7 +32,10 @@ export const taskSlice = createSlice({
     pointer: 0,
   } as ReduxRootState,
   reducers: {
-    addTask(state, action: PayloadAction<{ title: string; description: string; categoryId: string | null }>) {
+    addTask(
+      state,
+      action: PayloadAction<{ title: string; description: string; categoryId: string | null }>,
+    ) {
       const current = state.timeline[state.pointer];
       const next = {
         ...current,
@@ -79,7 +75,7 @@ export const taskSlice = createSlice({
       const next = {
         ...current,
         tasks: current.tasks.map((task) =>
-              task.id === action.payload
+          task.id === action.payload
             ? {
                 ...task,
                 status: task.status === "completed" ? ("active" as const) : ("completed" as const),

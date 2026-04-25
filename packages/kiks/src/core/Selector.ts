@@ -78,10 +78,8 @@ function defineMemoizedSelector<TState, TResult>(
 ): MemoizedSelector<TState, TResult> {
   const stats = createStats(strategy);
 
-  const memoizedSelector = ((state: TState): TResult => execute(state, stats)) as InternalMemoizedSelector<
-    TState,
-    TResult
-  >;
+  const memoizedSelector = ((state: TState): TResult =>
+    execute(state, stats)) as InternalMemoizedSelector<TState, TResult>;
 
   memoizedSelector.clear = (): void => {
     reset();
@@ -118,8 +116,8 @@ export function isMemoizedSelector<TState, TResult>(
 ): selector is MemoizedSelector<TState, TResult> {
   return Boolean(
     selector &&
-      typeof selector === "function" &&
-      MEMOIZED_SELECTOR_SYMBOL in (selector as unknown as Record<PropertyKey, unknown>),
+    typeof selector === "function" &&
+    MEMOIZED_SELECTOR_SYMBOL in (selector as unknown as Record<PropertyKey, unknown>),
   );
 }
 
@@ -141,12 +139,8 @@ export function createSelector<TState, const TDependencies extends readonly unkn
 ): MemoizedSelector<TState, TResult>;
 
 export function createSelector<TState, TResult, const TDependencies extends readonly unknown[]>(
-  selectorOrDependencies:
-    | Selector<TState, TResult>
-    | DependencySelectorList<TState, TDependencies>,
-  projectorOrOptions?:
-    | SelectorOptions<TState>
-    | ((...dependencies: TDependencies) => TResult),
+  selectorOrDependencies: Selector<TState, TResult> | DependencySelectorList<TState, TDependencies>,
+  projectorOrOptions?: SelectorOptions<TState> | ((...dependencies: TDependencies) => TResult),
   maybeOptions?: DependencySelectorOptions,
 ): MemoizedSelector<TState, TResult> {
   if (Array.isArray(selectorOrDependencies)) {
@@ -165,7 +159,9 @@ export function createSelector<TState, TResult, const TDependencies extends read
     return defineMemoizedSelector<TState, TResult>(
       "dependencies",
       (state, stats) => {
-        const nextDependencies = dependencies.map((dependency) => dependency(state)) as unknown as TDependencies;
+        const nextDependencies = dependencies.map((dependency) =>
+          dependency(state),
+        ) as unknown as TDependencies;
 
         if (
           hasValue &&

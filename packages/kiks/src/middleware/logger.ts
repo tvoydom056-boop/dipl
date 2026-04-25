@@ -5,10 +5,7 @@ import type { Middleware } from "./types";
  * Встроенный middleware логирования.
  * Выводит тип экшена и снимки состояния до и после обработки.
  */
-export function loggerMiddleware<
-  TState,
-  TAction extends Action,
->(): Middleware<TState, TAction> {
+export function loggerMiddleware<TState, TAction extends Action>(): Middleware<TState, TAction> {
   return ({ getState }) =>
     (next) =>
     (action) => {

@@ -133,7 +133,10 @@ const ahpMatrix = [
 export function calculateLibraryAhp(): LibraryAhpResult {
   const size = ahpMatrix.length;
   const columnSums = ahpMatrix[0].map((_, columnIndex) =>
-    round(ahpMatrix.reduce((total, row) => total + row[columnIndex], 0), 6),
+    round(
+      ahpMatrix.reduce((total, row) => total + row[columnIndex], 0),
+      6,
+    ),
   );
   const normalizedMatrix = ahpMatrix.map((row) =>
     row.map((value, columnIndex) => round(value / columnSums[columnIndex], 6)),
@@ -143,10 +146,13 @@ export function calculateLibraryAhp(): LibraryAhpResult {
   );
   const weights = Object.fromEntries(
     libraryCriterionOrder.map((criterion, index) => [criterion, weightValues[index]]),
-  ) as LibraryCriterionWeightMap;
+  ) as unknown as LibraryCriterionWeightMap;
 
   const weightedSums = ahpMatrix.map((row) =>
-    round(row.reduce((total, value, index) => total + value * weightValues[index], 0), 6),
+    round(
+      row.reduce((total, value, index) => total + value * weightValues[index], 0),
+      6,
+    ),
   );
   const lambdaValues = weightedSums.map((value, index) => round(value / weightValues[index], 6));
   const lambdaMax = round(
@@ -229,28 +235,22 @@ export function calculateLibraryTopsis(
         criterion,
         round(weights[criterion] * (row.normalized[criterion] / denominators[criterion]), 6),
       ]),
-    ) as LibraryCriterionScoreMap,
+    ) as unknown as LibraryCriterionScoreMap,
   }));
 
   const idealBest = Object.fromEntries(
     libraryCriterionOrder.map((criterion) => [
       criterion,
-      round(
-        Math.max(...weightedMatrix.map((row) => row.values[criterion])),
-        6,
-      ),
+      round(Math.max(...weightedMatrix.map((row) => row.values[criterion])), 6),
     ]),
-  ) as LibraryCriterionScoreMap;
+  ) as unknown as LibraryCriterionScoreMap;
 
   const idealWorst = Object.fromEntries(
     libraryCriterionOrder.map((criterion) => [
       criterion,
-      round(
-        Math.min(...weightedMatrix.map((row) => row.values[criterion])),
-        6,
-      ),
+      round(Math.min(...weightedMatrix.map((row) => row.values[criterion])), 6),
     ]),
-  ) as LibraryCriterionScoreMap;
+  ) as unknown as LibraryCriterionScoreMap;
 
   const results = weightedMatrix
     .map((row) => {
@@ -332,16 +332,12 @@ const scenarioTitles: Record<LibrarySensitivityScenarioEntry["key"], string> = {
   equal: "Равные веса",
 };
 
-export function calculateLibrarySensitivity(
-  rows: LibraryDecisionRow[],
-): {
+export function calculateLibrarySensitivity(rows: LibraryDecisionRow[]): {
   scenarios: LibrarySensitivityScenarioEntry[];
   stableWinner: boolean;
   stableWinnerKey: ImplementationKey | null;
 } {
-  const scenarios = (
-    ["baseline", "speed-focus", "bundle-focus", "equal"] as const
-  ).map((key) => {
+  const scenarios = (["baseline", "speed-focus", "bundle-focus", "equal"] as const).map((key) => {
     const weights = createScenarioWeights(key);
     const results = calculateWeightedScores(rows, weights).map((row, index) => ({
       key: row.key,
