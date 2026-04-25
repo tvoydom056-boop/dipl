@@ -10,11 +10,13 @@ import { pushHistory } from "../src/shared/historyHelpers";
 import { createInitialTaskState, type TaskState } from "../src/shared/taskModel";
 
 const ITERATIONS = 100_000;
+const RUNS = 3;
 
 interface BenchResult {
   name: string;
   opsPerSec: number;
   totalMs: number;
+  runOpsPerSec: number[];
 }
 
 function formatNumber(value: number): string {
@@ -24,14 +26,25 @@ function formatNumber(value: number): string {
 }
 
 function runBenchmark(name: string, task: () => void): BenchResult {
-  const startedAt = performance.now();
-  task();
-  const totalMs = performance.now() - startedAt;
+  const totals: number[] = [];
+  const speeds: number[] = [];
+
+  for (let run = 0; run < RUNS; run += 1) {
+    const startedAt = performance.now();
+    task();
+    const totalMs = performance.now() - startedAt;
+    totals.push(totalMs);
+    speeds.push(ITERATIONS / (totalMs / 1000));
+  }
+
+  const totalMs = totals.reduce((total, value) => total + value, 0) / RUNS;
+  const opsPerSec = speeds.reduce((total, value) => total + value, 0) / RUNS;
 
   return {
     name,
     totalMs,
-    opsPerSec: ITERATIONS / (totalMs / 1000),
+    opsPerSec,
+    runOpsPerSec: speeds,
   };
 }
 
@@ -208,7 +221,7 @@ updateBenchmarkResults((current) => ({
 
 const sortedResults = Object.values(benchmarkMap).sort((left, right) => right.opsPerSec - left.opsPerSec);
 
-console.log(`Dispatch benchmark, ${ITERATIONS} iterations`);
+console.log(`Dispatch benchmark, ${ITERATIONS} iterations x ${RUNS} runs`);
 for (const result of sortedResults) {
   console.log(
     `${result.name.padEnd(14)} ${formatNumber(result.opsPerSec).padStart(12)} ops/sec | ${formatNumber(result.totalMs).padStart(9)} ms`,

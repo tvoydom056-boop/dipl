@@ -6,12 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.json && vite build",
-    "bench:dispatch": "tsx ../benchmarks/dispatch.bench.ts",
+    "bench:dispatch": "tsx benchmarks/dispatch.bench.ts",
     "bench:bundle": "tsx benchmarks/bundle.bench.ts",
     "bench:rerender": "tsx benchmarks/rerender.bench.tsx",
-    "bench:selectors": "tsx ../benchmarks/selector-strategies.bench.ts",
+    "bench:selectors": "tsx ../benchmarks/selector-strategies.report.ts",
+    "bench:selector-ops": "tsx ../benchmarks/selector.bench.ts",
+    "bench:history": "vitest bench --root .. benchmarks/undo-redo.bench.ts --exclude demo/benchmarks/** --run",
     "bench:score": "tsx ../benchmarks/weighted-score.ts",
-    "bench": "npm run bench:dispatch && npm run bench:bundle && npm run bench:rerender && npm run bench:selectors && npm run bench:score"
+    "bench": "npm run bench:dispatch && npm run bench:bundle && npm run bench:rerender && npm run bench:selectors && npm run bench:selector-ops && npm run bench:history && npm run bench:score"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.9.1",
@@ -31,6 +33,7 @@
     "jsdom": "^26.1.0",
     "tsx": "^4.20.5",
     "typescript": "^5.8.3",
-    "vite": "^7.1.12"
+    "vite": "^7.1.12",
+    "vitest": "^3.2.4"
   }
 }

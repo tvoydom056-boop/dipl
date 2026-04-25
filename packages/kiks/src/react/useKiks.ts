@@ -1,5 +1,7 @@
 import {
   useContext,
+  useEffect,
+  useRef,
   useSyncExternalStore,
 } from "react";
 
@@ -12,6 +14,20 @@ const identity = <TState,>(state: TState): TState => state;
 
 function isSelector<TState, TResult>(value: unknown): value is Selector<TState, TResult> {
   return typeof value === "function";
+}
+
+function isDevelopmentEnvironment(): boolean {
+  const processValue = "process" in globalThis
+    ? (globalThis as typeof globalThis & {
+        process?: {
+          env?: {
+            NODE_ENV?: string;
+          };
+        };
+      }).process
+    : undefined;
+
+  return processValue?.env?.NODE_ENV !== "production";
 }
 
 /**
@@ -32,6 +48,7 @@ export function useKiks<TState, TAction extends Action, TResult = TState>(
   selector?: Selector<TState, TResult>,
 ): TResult {
   const contextStore = useContext(KiksContext) as Store<TState, TAction> | null;
+  const previousSelectorRef = useRef<Selector<TState, TResult> | null>(null);
 
   const resolvedStore = (
     isSelector(storeOrSelector)
@@ -50,6 +67,25 @@ export function useKiks<TState, TAction extends Action, TResult = TState>(
       ? storeOrSelector ?? identity<TState>
       : selector ?? identity<TState>
   ) as Selector<TState, TResult>;
+  const wasSelectorRegistered = resolvedStore.hasSelector(resolvedSelector);
+
+  useEffect(() => {
+    if (!isDevelopmentEnvironment()) {
+      previousSelectorRef.current = resolvedSelector;
+      return;
+    }
+
+    const previousSelector = previousSelectorRef.current;
+    const selectorChanged = previousSelector !== null && previousSelector !== resolvedSelector;
+
+    if (selectorChanged && !wasSelectorRegistered) {
+      console.warn(
+        "[kiks] useKiks received a new selector reference. Inline selectors disable store-level memoization. Move the selector outside the component or memoize it.",
+      );
+    }
+
+    previousSelectorRef.current = resolvedSelector;
+  }, [resolvedSelector, resolvedStore, wasSelectorRegistered]);
 
   return useSyncExternalStore(
     resolvedStore.subscribe.bind(resolvedStore),

@@ -1,5 +1,10 @@
 export type ImplementationKey = "kiks" | "redux" | "zustand" | "mobx";
 export type RerenderScenarioKey = "addTask" | "toggleTask" | "setSearch" | "undo";
+export type LibraryCriterionKey =
+  | "bundleSize"
+  | "dispatchSpeed"
+  | "dependencies"
+  | "builtInFeatures";
 export type SelectorStrategyKey =
   | "full-recompute"
   | "last-result"
@@ -71,6 +76,95 @@ export interface ParetoEntry {
   isEfficient: boolean;
 }
 
+export interface LibraryCriterionScoreMap {
+  bundleSize: number;
+  dispatchSpeed: number;
+  dependencies: number;
+  builtInFeatures: number;
+}
+
+export interface LibraryCriterionWeightMap {
+  bundleSize: number;
+  dispatchSpeed: number;
+  dependencies: number;
+  builtInFeatures: number;
+}
+
+export interface LibraryWeightedScoreEntry {
+  key: ImplementationKey;
+  title: string;
+  scores: LibraryCriterionScoreMap;
+  weightedTotal: number;
+}
+
+export interface LibraryAhpResult {
+  criteria: LibraryCriterionKey[];
+  matrix: number[][];
+  columnSums: number[];
+  normalizedMatrix: number[][];
+  weights: LibraryCriterionWeightMap;
+  lambdaMax: number;
+  ci: number;
+  cr: number;
+  isConsistent: boolean;
+}
+
+export interface LibraryParetoEntry {
+  key: ImplementationKey;
+  title: string;
+  dominates: ImplementationKey[];
+  dominatedBy: ImplementationKey[];
+  isEfficient: boolean;
+}
+
+export interface LibraryTopsisWeightedMatrixRow {
+  key: ImplementationKey;
+  title: string;
+  values: LibraryCriterionScoreMap;
+}
+
+export interface LibraryTopsisResultEntry {
+  key: ImplementationKey;
+  title: string;
+  distanceToIdeal: number;
+  distanceToAntiIdeal: number;
+  score: number;
+  rank: number;
+}
+
+export interface LibraryTopsisResult {
+  weightedMatrix: LibraryTopsisWeightedMatrixRow[];
+  idealBest: LibraryCriterionScoreMap;
+  idealWorst: LibraryCriterionScoreMap;
+  results: LibraryTopsisResultEntry[];
+}
+
+export interface LibrarySensitivityScenarioEntry {
+  key: "baseline" | "speed-focus" | "bundle-focus" | "equal";
+  title: string;
+  weights: LibraryCriterionWeightMap;
+  results: Array<{
+    key: ImplementationKey;
+    title: string;
+    score: number;
+    rank: number;
+  }>;
+  winner: ImplementationKey;
+}
+
+export interface SelectorBenchmarkScenarioEntry {
+  title: string;
+  opsPerSec: number;
+  totalMs: number;
+  averageMs: number;
+  runOpsPerSec: number[];
+}
+
+export interface SelectorBenchmarkSummary {
+  bestCacheHit: "named" | "inline";
+  bestCacheMiss: "named" | "inline";
+}
+
 export interface BenchmarkResults {
   generatedAt: string | null;
   dispatch: {
@@ -86,6 +180,28 @@ export interface BenchmarkResults {
   };
   librarySize: {
     kiks: LibrarySizeEntry | null;
+  };
+  libraryMath: {
+    weightedSum: LibraryWeightedScoreEntry[];
+    ahp: LibraryAhpResult;
+    topsis: LibraryTopsisResult;
+    pareto: LibraryParetoEntry[];
+    sensitivity: {
+      scenarios: LibrarySensitivityScenarioEntry[];
+      stableWinner: boolean;
+      stableWinnerKey: ImplementationKey | null;
+    };
+  };
+  selectorBenchmark: {
+    iterations: number;
+    runs: number;
+    results: {
+      namedCacheHit: SelectorBenchmarkScenarioEntry;
+      namedCacheMiss: SelectorBenchmarkScenarioEntry;
+      inlineCacheHit: SelectorBenchmarkScenarioEntry;
+      inlineCacheMiss: SelectorBenchmarkScenarioEntry;
+    };
+    summary: SelectorBenchmarkSummary;
   };
   selectorStrategies: {
     iterations: number;
@@ -106,6 +222,13 @@ export const implementationOrder: ImplementationKey[] = [
   "redux",
   "zustand",
   "mobx",
+];
+
+export const libraryCriterionOrder: LibraryCriterionKey[] = [
+  "bundleSize",
+  "dispatchSpeed",
+  "dependencies",
+  "builtInFeatures",
 ];
 
 export const rerenderScenarioOrder: RerenderScenarioKey[] = [
@@ -167,6 +290,34 @@ function createEmptyRerenderEntry(): RerenderBenchEntry {
   };
 }
 
+function createEmptyLibraryCriterionScoreMap(): LibraryCriterionScoreMap {
+  return {
+    bundleSize: 0,
+    dispatchSpeed: 0,
+    dependencies: 0,
+    builtInFeatures: 0,
+  };
+}
+
+function createEmptyLibraryCriterionWeightMap(): LibraryCriterionWeightMap {
+  return {
+    bundleSize: 0,
+    dispatchSpeed: 0,
+    dependencies: 0,
+    builtInFeatures: 0,
+  };
+}
+
+function createEmptySelectorBenchmarkScenarioEntry(title: string): SelectorBenchmarkScenarioEntry {
+  return {
+    title,
+    opsPerSec: 0,
+    totalMs: 0,
+    averageMs: 0,
+    runOpsPerSec: [],
+  };
+}
+
 export function createEmptyBenchmarkResults(): BenchmarkResults {
   return {
     generatedAt: null,
@@ -198,6 +349,66 @@ export function createEmptyBenchmarkResults(): BenchmarkResults {
     },
     librarySize: {
       kiks: null,
+    },
+    libraryMath: {
+      weightedSum: [],
+      ahp: {
+        criteria: [...libraryCriterionOrder],
+        matrix: [
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+        ],
+        columnSums: [0, 0, 0, 0],
+        normalizedMatrix: [
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+        ],
+        weights: createEmptyLibraryCriterionWeightMap(),
+        lambdaMax: 0,
+        ci: 0,
+        cr: 0,
+        isConsistent: false,
+      },
+      topsis: {
+        weightedMatrix: implementationOrder.map((key) => ({
+          key,
+          title: key,
+          values: createEmptyLibraryCriterionScoreMap(),
+        })),
+        idealBest: createEmptyLibraryCriterionScoreMap(),
+        idealWorst: createEmptyLibraryCriterionScoreMap(),
+        results: [],
+      },
+      pareto: implementationOrder.map((key) => ({
+        key,
+        title: key,
+        dominates: [],
+        dominatedBy: [],
+        isEfficient: false,
+      })),
+      sensitivity: {
+        scenarios: [],
+        stableWinner: false,
+        stableWinnerKey: null,
+      },
+    },
+    selectorBenchmark: {
+      iterations: 0,
+      runs: 0,
+      results: {
+        namedCacheHit: createEmptySelectorBenchmarkScenarioEntry("Named cache hit"),
+        namedCacheMiss: createEmptySelectorBenchmarkScenarioEntry("Named cache miss"),
+        inlineCacheHit: createEmptySelectorBenchmarkScenarioEntry("Inline cache hit"),
+        inlineCacheMiss: createEmptySelectorBenchmarkScenarioEntry("Inline cache miss"),
+      },
+      summary: {
+        bestCacheHit: "named",
+        bestCacheMiss: "named",
+      },
     },
     selectorStrategies: {
       iterations: 0,

@@ -245,9 +245,6 @@ label span,
 }
 
 .switcher {
-  position: sticky;
-  top: 0;
-  z-index: 6;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
@@ -293,6 +290,10 @@ label span,
 
 .math-analysis-grid--secondary {
   grid-template-columns: 1.2fr 0.8fr;
+}
+
+.math-analysis-grid--stack {
+  grid-template-columns: 1.15fr 0.85fr;
 }
 
 .math-card {
@@ -403,6 +404,14 @@ label span,
   grid-template-columns: 1.15fr repeat(4, 0.7fr) 0.8fr;
 }
 
+.math-score-row--compact {
+  grid-template-columns: 1.15fr 0.9fr 0.9fr 0.8fr 0.55fr;
+}
+
+.math-score-row--selector {
+  grid-template-columns: 1fr 0.7fr 0.7fr 1.3fr 0.7fr;
+}
+
 .complexity-row {
   grid-template-columns: 1fr 0.55fr 1.3fr;
 }
@@ -432,6 +441,149 @@ label span,
 
 .complexity-row span {
   color: var(--ink-soft);
+}
+
+.math-matrix-table,
+.math-pareto-list,
+.selector-bars,
+.math-scenario-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.math-matrix-row {
+  display: grid;
+  grid-template-columns: 1fr repeat(4, 0.75fr) 0.7fr;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(19, 34, 56, 0.04);
+}
+
+.math-matrix-row--head {
+  background: transparent;
+  padding: 0 4px 6px;
+}
+
+.math-matrix-row--head span {
+  color: #6b7c94;
+  font-size: 0.83rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.math-matrix-row--sensitivity {
+  grid-template-columns: 1fr repeat(4, 0.9fr);
+}
+
+.math-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.math-mini-card {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(19, 34, 56, 0.04);
+}
+
+.math-mini-card span,
+.math-mini-card small,
+.math-pareto-item span,
+.selector-bar-row small,
+.selector-bar-head span,
+.math-meta-row span {
+  color: #6b7c94;
+}
+
+.math-pareto-item {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(19, 34, 56, 0.04);
+  border: 1px solid rgba(19, 34, 56, 0.08);
+}
+
+.math-pareto-item.is-efficient {
+  border-color: rgba(212, 116, 45, 0.2);
+  background: linear-gradient(135deg, rgba(212, 116, 45, 0.12), rgba(241, 170, 83, 0.2));
+}
+
+.math-pareto-top,
+.selector-bar-head,
+.math-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.math-status {
+  display: inline-flex;
+  width: fit-content;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(19, 34, 56, 0.08);
+  color: #52657f;
+  font-size: 0.84rem;
+}
+
+.math-status.is-good {
+  background: rgba(27, 120, 77, 0.12);
+  color: #126d45;
+}
+
+.math-status.is-bad {
+  background: rgba(179, 53, 35, 0.12);
+  color: #a43722;
+}
+
+.math-status.is-muted {
+  background: rgba(19, 34, 56, 0.08);
+  color: #52657f;
+}
+
+.selector-bar-row {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(19, 34, 56, 0.04);
+}
+
+.selector-bar-track {
+  height: 14px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(19, 34, 56, 0.08);
+}
+
+.selector-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.selector-bar-fill.named.hit {
+  background: linear-gradient(90deg, #1c4269, #3c6ea3);
+}
+
+.selector-bar-fill.named.miss {
+  background: linear-gradient(90deg, #567dab, #8bb1da);
+}
+
+.selector-bar-fill.inline.hit {
+  background: linear-gradient(90deg, #8b5722, #d38a3a);
+}
+
+.selector-bar-fill.inline.miss {
+  background: linear-gradient(90deg, #c9935f, #e5ba92);
 }
 
 .bench-snapshot-row {
@@ -1686,8 +1838,10 @@ textarea {
   .switcher,
   .comparison-row,
   .math-score-row,
+  .math-matrix-row,
   .complexity-row,
   .bench-snapshot-row,
+  .math-mini-grid,
   .capability-grid,
   .architecture-step {
     grid-template-columns: 1fr;
@@ -1698,7 +1852,8 @@ textarea {
   }
 
   .math-score-row--head,
-  .complexity-row--head {
+  .complexity-row--head,
+  .math-matrix-row--head {
     display: none;
   }
 

@@ -1,9 +1,12 @@
 import rawResults from "../generated/benchmark-results.json";
 import {
+  createEmptyBenchmarkResults,
   implementationOrder,
+  libraryCriterionOrder,
+  selectorStrategyOrder,
   type BenchmarkResults,
   type ImplementationKey,
-  selectorStrategyOrder,
+  type LibraryCriterionKey,
   type SelectorCriterionKey,
   type SelectorStrategyKey,
 } from "./benchmarkModel";
@@ -60,7 +63,22 @@ export type SelectorDecisionRow = {
   isWinner: boolean;
 };
 
-const results = rawResults as BenchmarkResults;
+const results = {
+  ...createEmptyBenchmarkResults(),
+  ...(rawResults as Partial<BenchmarkResults>),
+  libraryMath: {
+    ...createEmptyBenchmarkResults().libraryMath,
+    ...(rawResults as Partial<BenchmarkResults>).libraryMath,
+  },
+  selectorBenchmark: {
+    ...createEmptyBenchmarkResults().selectorBenchmark,
+    ...(rawResults as Partial<BenchmarkResults>).selectorBenchmark,
+  },
+  selectorStrategies: {
+    ...createEmptyBenchmarkResults().selectorStrategies,
+    ...(rawResults as Partial<BenchmarkResults>).selectorStrategies,
+  },
+} satisfies BenchmarkResults;
 
 const implementationMeta: Record<
   ImplementationKey,
@@ -210,6 +228,21 @@ function formatZoneSummary(changedZones: string[]): string {
     .join(" • ");
 }
 
+function formatCriterionName(criterion: LibraryCriterionKey): string {
+  switch (criterion) {
+    case "bundleSize":
+      return "Bundle";
+    case "dispatchSpeed":
+      return "Speed";
+    case "dependencies":
+      return "Deps";
+    case "builtInFeatures":
+      return "Features";
+    default:
+      return criterion;
+  }
+}
+
 export const benchmarkResults = results;
 
 const rerenderTotals = implementationOrder.map(
@@ -336,6 +369,128 @@ export const weightedScoreRows: WeightedScoreRow[] = implementationOrder
     };
   })
   .sort((left, right) => right.weightedTotal - left.weightedTotal);
+
+export const libraryAhpMatrixRows = results.libraryMath.ahp.criteria.map((criterion, rowIndex) => ({
+  criterion,
+  label: formatCriterionName(criterion),
+  values: results.libraryMath.ahp.matrix[rowIndex] ?? [0, 0, 0, 0],
+  normalizedValues: results.libraryMath.ahp.normalizedMatrix[rowIndex] ?? [0, 0, 0, 0],
+  weight: results.libraryMath.ahp.weights[criterion],
+  columnSum: results.libraryMath.ahp.columnSums[rowIndex] ?? 0,
+}));
+
+export const libraryAhpSummary = {
+  lambdaMax: results.libraryMath.ahp.lambdaMax,
+  ci: results.libraryMath.ahp.ci,
+  cr: results.libraryMath.ahp.cr,
+  isConsistent: results.libraryMath.ahp.isConsistent,
+};
+
+export const libraryParetoRows = results.libraryMath.pareto.map((row) => ({
+  ...row,
+  dominatesLabels: row.dominates.map((key) => implementationMeta[key].title),
+  dominatedByLabels: row.dominatedBy.map((key) => implementationMeta[key].title),
+}));
+
+export const libraryParetoFrontier = libraryParetoRows.filter((row) => row.isEfficient);
+
+export const libraryTopsisMatrixRows = results.libraryMath.topsis.weightedMatrix.map((row) => ({
+  ...row,
+  label: implementationMeta[row.key].title,
+}));
+
+export const libraryTopsisIdeal = {
+  best: libraryCriterionOrder.map((criterion) => ({
+    criterion,
+    label: formatCriterionName(criterion),
+    value: results.libraryMath.topsis.idealBest[criterion],
+  })),
+  worst: libraryCriterionOrder.map((criterion) => ({
+    criterion,
+    label: formatCriterionName(criterion),
+    value: results.libraryMath.topsis.idealWorst[criterion],
+  })),
+};
+
+export const libraryTopsisRows = results.libraryMath.topsis.results.map((row) => ({
+  ...row,
+  isWinner: row.rank === 1,
+}));
+
+export const librarySensitivityRows = implementationOrder.map((key) => ({
+  key,
+  title: implementationMeta[key].title,
+  scenarios: results.libraryMath.sensitivity.scenarios.map((scenario) => {
+    const scenarioResult = scenario.results.find((row) => row.key === key);
+
+    return {
+      key: scenario.key,
+      title: scenario.title,
+      rank: scenarioResult?.rank ?? 0,
+      score: scenarioResult?.score ?? 0,
+      isWinner: scenario.winner === key,
+    };
+  }),
+}));
+
+export const librarySensitivityScenarios = results.libraryMath.sensitivity.scenarios.map((scenario) => ({
+  key: scenario.key,
+  title: scenario.title,
+  winner: implementationMeta[scenario.winner].title,
+  weights: libraryCriterionOrder.map((criterion) => ({
+    criterion,
+    label: formatCriterionName(criterion),
+    value: scenario.weights[criterion],
+  })),
+}));
+
+export const librarySensitivitySummary = {
+  stableWinner: results.libraryMath.sensitivity.stableWinner,
+  stableWinnerLabel: results.libraryMath.sensitivity.stableWinnerKey
+    ? implementationMeta[results.libraryMath.sensitivity.stableWinnerKey].title
+    : null,
+};
+
+export const selectorBenchmarkRows = [
+  {
+    key: "namedCacheHit",
+    group: "named",
+    cache: "hit",
+    ...results.selectorBenchmark.results.namedCacheHit,
+  },
+  {
+    key: "namedCacheMiss",
+    group: "named",
+    cache: "miss",
+    ...results.selectorBenchmark.results.namedCacheMiss,
+  },
+  {
+    key: "inlineCacheHit",
+    group: "inline",
+    cache: "hit",
+    ...results.selectorBenchmark.results.inlineCacheHit,
+  },
+  {
+    key: "inlineCacheMiss",
+    group: "inline",
+    cache: "miss",
+    ...results.selectorBenchmark.results.inlineCacheMiss,
+  },
+] as const;
+
+const maxSelectorOps = Math.max(...selectorBenchmarkRows.map((row) => row.opsPerSec), 1);
+
+export const selectorBenchmarkChartRows = selectorBenchmarkRows.map((row) => ({
+  ...row,
+  widthPercent: (row.opsPerSec / maxSelectorOps) * 100,
+}));
+
+export const selectorBenchmarkSummary = {
+  iterations: results.selectorBenchmark.iterations,
+  runs: results.selectorBenchmark.runs,
+  bestCacheHit: results.selectorBenchmark.summary.bestCacheHit,
+  bestCacheMiss: results.selectorBenchmark.summary.bestCacheMiss,
+};
 
 export const selectorAhpWeights = results.selectorStrategies?.ahp.weights ?? {
   firstRun: 0,

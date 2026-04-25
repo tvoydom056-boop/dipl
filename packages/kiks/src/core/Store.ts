@@ -103,6 +103,13 @@ export class Store<
   }
 
   /**
+   * Returns true when the selector reference is already known to the store cache.
+   */
+  public hasSelector<TResult>(selector: Selector<TState, TResult>): boolean {
+    return isMemoizedSelector(selector) || this.selectorCache.has(selector as Selector<TState, unknown>);
+  }
+
+  /**
    * Последовательно пропускает экшен через все редьюсеры
    * и уведомляет подписчиков только при изменении ссылки на состояние.
    */
